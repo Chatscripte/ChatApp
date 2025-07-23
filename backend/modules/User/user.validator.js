@@ -4,8 +4,8 @@ const updateUserValidator = z.object({
 	username: z
 		.string()
 		.min(3)
-		.max(30)
-		.regex(/^[a-zA-z0-9_]+$/),
+		.max(20)
+		.regex(/^[a-zA-Z0-9_-]{3,20}$/),
 	email: z.email(),
 });
 
