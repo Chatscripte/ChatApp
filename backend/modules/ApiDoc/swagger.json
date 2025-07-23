@@ -53,6 +53,20 @@
 					}
 				}
 			}
+		},
+		"/api/auth/getMe": {
+			"get": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["Auth"],
+				"responses": {
+					"200": { "description": "User datas" },
+					"404": { "description": "User not found" }
+				}
+			}
 		}
 	}
 }
