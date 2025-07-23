@@ -13,7 +13,7 @@ const register = async (res, identifier, password) => {
 
 	const accessToken = authService.createAccessToken(newUser._id);
 
-	return successResponse(res, 201, { accessToken });
+	return successResponse(res, 201, { accessToken, isNew: true });
 };
 
 exports.authOrRegister = async (req, res, next) => {
@@ -42,7 +42,7 @@ exports.authOrRegister = async (req, res, next) => {
 		}
 
 		const accessToken = authService.createAccessToken(user._id);
-		return successResponse(res, 201, { accessToken });
+		return successResponse(res, 201, { accessToken, isNew: false });
 	} catch (err) {
 		next(err);
 	}
