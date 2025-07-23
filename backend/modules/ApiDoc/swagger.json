@@ -16,6 +16,9 @@
 	"tags": [
 		{
 			"name": "Auth"
+		},
+		{
+			"name": "User"
 		}
 	],
 	"paths": {
@@ -65,6 +68,33 @@
 				"responses": {
 					"200": { "description": "User datas" },
 					"404": { "description": "User not found" }
+				}
+			}
+		},
+		"/api/user/": {
+			"put": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": ["User"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"example": {
+									"username": "pourya",
+									"email": "pourya.bu@gmail.com"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": { "description": "Successfully updated!" },
+					"500": { "description": "Internal Server Error" }
 				}
 			}
 		}

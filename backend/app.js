@@ -14,8 +14,8 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 app.use(cors());
 
-app.use("/auth", authRoutes);
-app.use("/user", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 app.use("/api-doc", apiDocRouter);
 
