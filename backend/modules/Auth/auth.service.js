@@ -12,6 +12,11 @@ exports.findUserByIdentifier = async (identifier) => {
 	return user;
 };
 
+exports.findUserById = async (userID) => {
+	const user = await UserModel.findById(userID).select("-password");
+	return user;
+};
+
 const createRandomUsername = () => {
 	return `Anonymous${Math.round(Math.random() * 9999)}_${Math.round(
 		Math.random() * 99

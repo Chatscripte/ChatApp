@@ -47,3 +47,12 @@ exports.authOrRegister = async (req, res, next) => {
 		next(err);
 	}
 };
+
+exports.getMe = async (req, res, next) => {
+	try {
+		const user = req.user;
+		return successResponse(res, 200, user);
+	} catch (err) {
+		next(err);
+	}
+};
