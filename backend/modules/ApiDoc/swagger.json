@@ -1,0 +1,58 @@
+{
+	"openapi": "3.1.0",
+	"info": {
+		"title": "ChatApp",
+		"version": "1.0.0"
+	},
+	"components": {
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		}
+	},
+	"tags": [
+		{
+			"name": "Auth"
+		}
+	],
+	"paths": {
+		"/api/auth/": {
+			"post": {
+				"tags": ["Auth"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"example": {
+									"identifier": "pourya",
+									"password": "12345678"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "successfully registered"
+					},
+					"200": {
+						"description": "successfully Logged in"
+					},
+					"422": {
+						"description": "Validation Error(Invalid data)"
+					},
+					"400": {
+						"description": "Incorrect Password"
+					},
+					"500": {
+						"description": "Internal Error"
+					}
+				}
+			}
+		}
+	}
+}
