@@ -1,7 +1,20 @@
-const { errorResponse } = require("../../helpers/responses");
+const { errorResponse, successResponse } = require("../../helpers/responses");
 const validatorErrorHandler = require("../../helpers/validatorErrorHandler");
 const authService = require("./auth.service");
 const { authValidator } = require("./auth.validator");
+const bcrypt = require("bcrypt");
+
+const register = async (res, identifier, password) => {
+	const newUser = await authService.createUser(identifier, password);
+
+	if (!newUser) {
+		return errorResponse(res, 500, "Something Went wrong!");
+	}
+
+	const accessToken = authService.createAccessToken(newUser._id);
+
+	return successResponse(res, 201, { accessToken });
+};
 
 exports.authOrRegister = async (req, res, next) => {
 	try {
@@ -14,7 +27,22 @@ exports.authOrRegister = async (req, res, next) => {
 		//* Data
 		const { identifier, password } = validationResult.data;
 
-		res.json({ identifier, password });
+		const salt = bcrypt.genSaltSync(8);
+		const hashedPassword = bcrypt.hashSync(password, salt);
+
+		const user = await authService.findUserByIdentifier(identifier);
+
+		if (!user) {
+			return await register(res, identifier, hashedPassword);
+		}
+
+		const comparePasswords = bcrypt.compareSync(password, user.password);
+		if (!comparePasswords) {
+			return errorResponse(res, 400, "Inccorect password");
+		}
+
+		const accessToken = authService.createAccessToken(user._id);
+		return successResponse(res, 201, { accessToken });
 	} catch (err) {
 		next(err);
 	}
