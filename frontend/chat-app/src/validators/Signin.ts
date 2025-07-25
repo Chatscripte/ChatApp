@@ -9,7 +9,7 @@ export const signInSchema = z.object({
                 // Check if the value is a valid email
                 const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
                 // Check if the value is a valid username (e.g., alphanumeric, 3-20 characters)
-                const isUsername = /^[a-zA-Z0-9_]{3,20}$/.test(value);
+                const isUsername = /^[a-zA-Z0-9_-]{3,20}$/.test(value);
                 return isEmail || isUsername;
             },
             { message: "Must be a valid email or username (3-20 alphanumeric characters)" }
