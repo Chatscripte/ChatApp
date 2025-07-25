@@ -1,8 +1,9 @@
 require("dotenv").config();
 const { default: mongoose } = require("mongoose");
 const http = require("http");
+const socketInit = require("./sockets/index");
 const app = require("./app");
-const configs = require("./configs") 
+const configs = require("./configs");
 
 const connecctToDB = async () => {
 	try {
@@ -17,6 +18,7 @@ const connecctToDB = async () => {
 const start = () => {
 	const port = process.env.PORT || 4000;
 	const server = http.createServer(app);
+	socketInit(server);
 
 	server.listen(port, () => {
 		console.log(`Server is Running On port ${port}`);
