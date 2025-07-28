@@ -7,10 +7,14 @@ const membershipSchema = new mongoose.Schema(
 			ref: "User",
 			required: true,
 		},
-		group: {
+		chat: {
 			type: mongoose.Types.ObjectId,
 			ref: "Chat",
 			required: true,
+		},
+		role: {
+			type: String,
+			enum: ["OWNER", "MEMBER"],
 		},
 	},
 	{ timestamps: true, versionKey: false }

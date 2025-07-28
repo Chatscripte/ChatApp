@@ -9,21 +9,22 @@ const chatShema = new mongoose.Schema(
 		},
 		title: {
 			type: String,
-			required: true,
+			required: false,
 		},
 		owner: {
-			type: String,
+			type: mongoose.Types.ObjectId,
+			ref: "User",
 			required: false,
 		},
 		profile: {
 			type: String,
 			require: false,
-			default: "test.png",
 		},
 		inviteLink: {
 			type: String,
+			required: false,
 			unique: true,
-			required: true,
+			sparse: true,
 		},
 		//! TODO: add lastMessage field after creating Message collection
 	},
