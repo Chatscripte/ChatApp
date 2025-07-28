@@ -18,6 +18,7 @@ const chatShema = new mongoose.Schema(
 		profile: {
 			type: String,
 			require: false,
+			default: "test.png",
 		},
 		inviteLink: {
 			type: String,
