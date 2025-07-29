@@ -4,7 +4,6 @@ const { errorHandler } = require("./middlewares/errorHandler");
 
 const authRoutes = require("./modules/Auth/auth.routes");
 const userRoutes = require("./modules/User/user.routes");
-const chatRoutes = require("./modules/Chat/chat.routes");
 
 const apiDocRouter = require("./modules/ApiDoc/swagger.routes");
 
@@ -20,7 +19,6 @@ app.use(cors());
 //* Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/chat", chatRoutes);
 
 app.use("/api-doc", apiDocRouter);
 

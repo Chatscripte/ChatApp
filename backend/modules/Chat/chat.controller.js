@@ -1,82 +1,85 @@
-const validatorErrorHandler = require("../../helpers/validatorErrorHandler");
+const validatorErrorHandler = require("../../sockets/helpers/socketValidatorErrorHandler");
 const chatService = require("./chat.service");
 const authService = require("./../Auth/auth.service");
 const { pvChatValidator, groupChatValidator } = require("./chat.validator");
-const { errorResponse, successResponse } = require("../../helpers/responses");
 
-const createPv = async (res, ownerID, recipientUsername) => {
+const createPv = async (ownerID, recipientUsername) => {
 	//* Validation
 	const validationResult = pvChatValidator.safeParse({
 		recipientUsername,
 	});
 	if (!validationResult.success) {
-		return validatorErrorHandler(res, validationResult);
+		return validatorErrorHandler(validationResult);
 	}
 
 	//*
 	const recipient = await authService.findUserByIdentifier(recipientUsername);
 
 	if (!recipient) {
-		return errorResponse(res, 404, "Recipient Not Found!");
+		return { success: false, message: "Recipient Not Found!" };
 	}
 
 	if (ownerID.toString() === recipient._id.toString()) {
-		return errorResponse(
-			res,
-			400,
-			"chat creator and recipient is the same!"
-		);
+		return {
+			success: false,
+			message: "chat creator and recipient is the same!",
+		};
 	}
 
 	const newChatData = await chatService.createPvChat(ownerID, recipient._id);
 
 	if (newChatData.status === false) {
-		return errorResponse(res, 400, newChatData.message);
+		return {
+			success: false,
+			message: newChatData.message,
+		};
 	}
 
-	return successResponse(res, 201, { message: "Created successfully" });
+	return {
+		success: true,
+		message: "Created Successfully",
+		chat: newChatData,
+	};
 };
 
-const createGroup = async (res, ownerID, title) => {
+const createGroup = async (ownerID, title) => {
 	//* Validation
 	const validationResult = groupChatValidator.safeParse({
 		title,
 	});
 	if (!validationResult.success) {
-		return validatorErrorHandler(res, validationResult);
+		return validatorErrorHandler(validationResult);
 	}
 
-	//! TODO: Complete this func
 	const newChatData = await chatService.createGroupChat(ownerID, title);
 
 	if (newChatData.status === false) {
-		return errorResponse(res, 400, newChatData.message);
+		return {
+			success: false,
+			message: newChatData.message,
+		};
 	}
 
-	return successResponse(res, 201, {
-		message: "Created successfully",
-	});
+	return {
+		success: true,
+		message: "Created Successfully",
+		chat: newChatData,
+	};
 };
 
-exports.createNewChat = async (req, res, next) => {
-	try {
-		let { type, title, recipientUsername } = req.body;
-		let ownerID = req.user._id;
+exports.createNewChat = async (socket, data) => {
+	let { type, title, recipientUsername } = data;
+	let ownerID = socket.user._id;
 
-		type = type.toUpperCase();
+	type = type.toUpperCase();
 
-		if (type === "PV") {
-			return await createPv(res, ownerID, recipientUsername);
-			//! TODO: Socket emmiting
-		}
-
-		if (type === "GROUP") {
-			return await createGroup(res, ownerID, title);
-			//! TODO: Socket emmiting
-		}
-
-		return errorResponse(res, 400, "Invalid chat type");
-	} catch (err) {
-		next(err);
+	if (type === "PV") {
+		return await createPv(ownerID, recipientUsername);
 	}
+
+	if (type === "GROUP") {
+		return await createGroup(ownerID, title);
+	}
+
+	return { success: false, message: "Invalid Chat type" };
 };
