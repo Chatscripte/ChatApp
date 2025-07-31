@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Grid, Box, List, ListItem, ListItemText, TextField, Typography, Paper, Drawer, IconButton } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -9,9 +9,33 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import VerticalSplitIcon from '@mui/icons-material/VerticalSplit';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import '../styles/ChatSystem.scss';
+import socket from '../lib/socket';
 
 function ChatSystem() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+    useEffect(() => {
+        socket.connect();
+
+        socket.on('connect', () => {
+            console.log('Connected to WebSocket server');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from WebSocket server');
+        });
+
+        socket.on('connect_error', (error) => {
+            console.error('Connection error:', error);
+        });
+
+        return () => {
+            socket.off('connect');
+            socket.off('disconnect');
+            socket.off('connect_error');
+            socket.disconnect();
+        };
+    }, []);
 
     // Mock data for conversations
     const conversations = [
