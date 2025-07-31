@@ -1,8 +1,9 @@
 const express = require("express");
-const controller = require("./user.controller");
+const controller = require("./chat.controller");
 const tokenAuth = require("../../middlewares/tokenAuth");
 
 const router = express.Router();
 
-router.route("/").put(tokenAuth, controller.updateUserInformation);
+router.route("/").post(tokenAuth, controller.createNewChat);
+
 module.exports = router;
