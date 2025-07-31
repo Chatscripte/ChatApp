@@ -1,5 +1,3 @@
-const { errorResponse } = require("./responses");
-
 module.exports = async (result) => {
 	const issues = result.error.issues;
 	const errorMsgs = [];
