@@ -2,6 +2,7 @@ const ChatModel = require("./../../models/Chat");
 const MembershipModel = require("./../../models/Membership");
 const crypto = require("crypto");
 const configs = require("./../../configs");
+const { isValidObjectId } = require("mongoose");
 
 const isExistingPvChat = async (userA, userB) => {
 	const userAChats = await MembershipModel.find({ user: userA }).distinct(
@@ -101,4 +102,28 @@ exports.createGroupChat = async (owner, title) => {
 		chatInfo: await newChat.populate("owner", "-password"),
 		members: membership,
 	};
+};
+
+exports.findChatById = async (chatID) => {
+	if (!isValidObjectId(chatID)) return false;
+
+	const chat = await ChatModel.findById(chatID);
+
+	return chat ? chat : false;
+};
+
+exports.updateChatLastMessage = async (chatID, messageID) => {
+	const updatedChat = await ChatModel.findByIdAndUpdate(
+		chatID,
+		{
+			$set: {
+				lastMessage: messageID,
+			},
+		},
+		{ new: true }
+	)
+		.populate("owner", "-password")
+		.populate("lastMessage", "-chat -sender -updatedAt");
+
+	return updatedChat;
 };
