@@ -9,7 +9,7 @@ exports.registerChatHandler = (io, socket) => {
 				return cb({
 					success: false,
 					message: result.message,
-					data: data ? data : undefined,
+					data: result.data ? result.data : undefined,
 				});
 			}
 

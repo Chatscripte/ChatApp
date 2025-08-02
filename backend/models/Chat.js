@@ -26,7 +26,11 @@ const chatShema = new mongoose.Schema(
 			unique: true,
 			sparse: true,
 		},
-		//! TODO: add lastMessage field after creating Message collection
+		lastMessage: {
+			type: mongoose.Types.ObjectId,
+			ref: "Message",
+			require: false,
+		},
 	},
 	{ timestamps: true, versionKey: false }
 );

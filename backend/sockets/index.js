@@ -20,6 +20,11 @@ module.exports = (server) => {
 		//! TODO: Join User to all chats
 
 		registerChatHandler(io, socket);
+
+		// io.on("message:send", (data, cb) => {
+		// 	const senderID = socket.user._id
+		// 	const {chatID, text, file, location} = data
+		// })
 	});
 
 	return io;

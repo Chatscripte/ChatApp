@@ -1,4 +1,4 @@
-module.exports = async (result) => {
+module.exports = (result) => {
 	const issues = result.error.issues;
 	const errorMsgs = [];
 
