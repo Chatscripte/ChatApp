@@ -1,7 +1,7 @@
 const { createNewMessage } = require("./message.controller");
 
 exports.registerMessageHandler = (io, socket) => {
-	io.on("message:send", async (data, cb) => {
+	socket.on("message:send", async (data, cb) => {
 		try {
 			const result = await createNewMessage(socket, data);
 

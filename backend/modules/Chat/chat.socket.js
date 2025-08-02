@@ -1,7 +1,7 @@
 const { createNewChat } = require("./chat.controller");
 
 exports.registerChatHandler = (io, socket) => {
-	io.on("chat:create", async (data, cb) => {
+	socket.on("chat:create", async (data, cb) => {
 		try {
 			const result = await createNewChat(socket, data);
 

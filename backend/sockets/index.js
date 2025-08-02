@@ -1,6 +1,9 @@
 const { Server } = require("socket.io");
 const authToken = require("./middlewares/socketTokenAuth");
 const { registerChatHandler } = require("./../modules/Chat/chat.socket");
+const {
+	registerMessageHandler,
+} = require("./../modules/Message/message.socket");
 
 module.exports = (server) => {
 	const io = new Server(server, {
@@ -21,10 +24,7 @@ module.exports = (server) => {
 
 		registerChatHandler(io, socket);
 
-		// io.on("message:send", (data, cb) => {
-		// 	const senderID = socket.user._id
-		// 	const {chatID, text, file, location} = data
-		// })
+		registerMessageHandler(io, socket);
 	});
 
 	return io;
