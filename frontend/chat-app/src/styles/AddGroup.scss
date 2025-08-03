@@ -1,0 +1,47 @@
+$text-primary: #E0E0E0;
+$border-color: #424242;
+$sent-bubble: #2E7D32;
+
+
+.add-new-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: $text-primary;
+
+  .btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .group-title {
+    padding: 20px;
+    color: $text-primary;
+    background-color: transparent;
+    border: 1px solid $border-color;
+    border-radius: 18px;
+    width: 100%;
+    margin-inline: 13px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    outline: none;
+    font-size: 18px;
+    max-width: -webkit-fill-available;
+  }
+
+  button {
+    border-radius: 14px;
+    border: 1px solid $sent-bubble;
+    padding-inline: 20px;
+    padding-block: 13px;
+    background-color: transparent;
+    color: $text-primary;
+    animation: 0.3ms ease-in ;
+    cursor: pointer;
+    &:hover {
+      background-color: $sent-bubble;
+    }
+  }
+}
