@@ -14,7 +14,7 @@ import { Grid } from '@mui/material';
 import '../styles/Signin.scss';
 import { validateSignIn } from '../validators/Signin';
 import { setCookie } from '../lib/helper';
-import {  useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const SignIn = () => {
   const [identifier, setIdentifier] = useState('');
@@ -35,6 +35,9 @@ const SignIn = () => {
           },
           body: JSON.stringify({ identifier, password }),
         });
+         if (result.status === 400) {
+           setError({ general: 'Incorrect Password' });
+         }
         const { data } = await result.json();
         setCookie('accessToken', data.accessToken, import.meta.env.VITE_ACCESS_TOKEN_EXPIRES_IN_SECONDS);
         navigate('/chat');
