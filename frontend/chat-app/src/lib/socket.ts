@@ -1,12 +1,13 @@
 import { io } from "socket.io-client";
-import { getCookie } from "./helper";
 
-
-const socket = io('ws://localhost:3333', {
+const socket = io("ws://localhost:3333", {
     autoConnect: false,
     auth: {
-        token: getCookie('accessToken')
-    }
+        token: null,
+    },
 });
+export const updateSocketAuth = (accessToken: string | null) => {
+    socket.auth = { token: accessToken };
+};
 
 export default socket;

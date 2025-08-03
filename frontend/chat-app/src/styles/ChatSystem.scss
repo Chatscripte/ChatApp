@@ -48,7 +48,8 @@ $border-color: #424242;
           border-radius: 18px;
           width: 100%;
           margin-inline: 13px;
-          margin-block: 30px;
+          margin-top: 30px;
+          margin-bottom: 20px;
           outline: none;
           font-size: 18px;
           max-width: -webkit-fill-available;
@@ -57,10 +58,10 @@ $border-color: #424242;
         .search-icon {
           position: absolute;
           left: 25px;
-          top: 50%;
+          top: 55%;
           transform: translateY(-50%);
           color: $text-secondary;
-          font-size: 33px;
+          font-size: 27px;
         }
       }
 
@@ -266,7 +267,7 @@ $border-color: #424242;
         padding: 16px;
         border-top: 1px solid $border-color;
         background-color: $sidebar-bg;
-        
+
 
         .attach-icon {
           color: $text-primary;
@@ -347,3 +348,32 @@ $border-color: #424242;
     }
   }
 }
+
+.empty-chats-tem {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+  p,
+  svg {
+    color: #37474F;
+  }
+
+  svg {
+    cursor: pointer;
+  }
+}
+
+.chats-types {
+  display: flex;
+  align-items: center;
+  padding-inline: 29px;
+  color: $text-primary;
+
+  svg {
+    cursor: pointer;
+    font-size: 20px;
+  }
+}
+
