@@ -19,7 +19,7 @@ interface ChatTemplateProps {
 
 function ChatTemplate({ isChatOpend, currentChat, setIsDrawerOpen, isDrawerOpen }: ChatTemplateProps) {
     const [message, setMessage] = useState('');
-    
+
     useEffect(() => {
         socket.on(SOCKET_EVENTS.CHAT_GET_MESSAGES, (data) => {
             console.log('Received messages:', data);
@@ -32,7 +32,7 @@ function ChatTemplate({ isChatOpend, currentChat, setIsDrawerOpen, isDrawerOpen 
     const sendMessage = () => {
         // Send the message to the server
         socket.emit(SOCKET_EVENTS.CHAT_SEND_MESSAGE, {
-            chatId: currentChat?._id.toString(),
+            chatID: currentChat?._id.toString(),
             text: message,
         }, (data: unknown) => {
             console.log('Message sent:', data);
