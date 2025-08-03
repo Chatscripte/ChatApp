@@ -3,6 +3,18 @@ const chatService = require("./chat.service");
 const authService = require("./../Auth/auth.service");
 const { pvChatValidator, groupChatValidator } = require("./chat.validator");
 
+exports.getAll = async (socket) => {
+	try {
+		const userID = socket.user._id;
+
+		const chats = await chatService.getAllChats(userID);
+
+		return chats;
+	} catch (err) {
+		next(err);
+	}
+};
+
 const createPv = async (ownerID, recipientUsername) => {
 	//* Validation
 	const validationResult = pvChatValidator.safeParse({

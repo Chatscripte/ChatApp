@@ -6,6 +6,7 @@ const path = require("path");
 const authRoutes = require("./modules/Auth/auth.routes");
 const userRoutes = require("./modules/User/user.routes");
 const messageRoutes = require("./modules/Message/mesage.routes");
+const chatRoutes = require("./modules/Chat/chat.routes");
 
 const apiDocRouter = require("./modules/ApiDoc/swagger.routes");
 
@@ -27,6 +28,7 @@ app.use(
 //* Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);
 
 app.use("/api-doc", apiDocRouter);

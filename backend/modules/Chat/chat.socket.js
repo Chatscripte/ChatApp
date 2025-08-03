@@ -1,4 +1,4 @@
-const { createNewChat } = require("./chat.controller");
+const { createNewChat, getAll } = require("./chat.controller");
 
 exports.registerChatHandler = (io, socket) => {
 	socket.on("chat:create", async (data, cb) => {
@@ -22,6 +22,20 @@ exports.registerChatHandler = (io, socket) => {
 			cb({ success: true });
 		} catch (err) {
 			cb({ success: false, message: err.message });
+		}
+	});
+
+	socket.on("chat:get:all", async (cb) => {
+		try {
+			const chats = await getAll(socket);
+
+			chats.forEach((chat) => {
+				socket.join(chat._id);
+			});
+
+			return cb({ success: true, chats });
+		} catch (err) {
+			return cb({ success: false, message: err.message });
 		}
 	});
 };

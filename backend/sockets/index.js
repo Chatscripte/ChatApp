@@ -20,8 +20,6 @@ module.exports = (server) => {
 		//* Join to personal room
 		socket.join(userID);
 
-		//! TODO: Join User to all chats
-
 		registerChatHandler(io, socket);
 
 		registerMessageHandler(io, socket);

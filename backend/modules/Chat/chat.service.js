@@ -3,6 +3,7 @@ const MembershipModel = require("./../../models/Membership");
 const crypto = require("crypto");
 const configs = require("./../../configs");
 const { isValidObjectId } = require("mongoose");
+const { readSync } = require("fs");
 
 const isExistingPvChat = async (userA, userB) => {
 	const userAChats = await MembershipModel.find({ user: userA }).distinct(
@@ -123,7 +124,33 @@ exports.updateChatLastMessage = async (chatID, messageID) => {
 		{ new: true }
 	)
 		.populate("owner", "-password")
-		.populate("lastMessage", "-chat -sender -updatedAt");
+		.populate.populate({
+			path: "lastMessage",
+			populate: {
+				path: "sender",
+				model: "User",
+				select: "username",
+			},
+			select: "-updatedAt -chat",
+		});
 
 	return updatedChat;
+};
+
+exports.getAllChats = async (userID) => {
+	const chatIds = await MembershipModel.find({ user: userID }).distinct(
+		"chat"
+	);
+
+	const chats = await ChatModel.find({ _id: { $in: chatIds } }).populate({
+		path: "lastMessage",
+		populate: {
+			path: "sender",
+			model: "User",
+			select: "username",
+		},
+		select: "-updatedAt -chat",
+	});
+
+	return chats;
 };
