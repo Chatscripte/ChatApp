@@ -124,7 +124,7 @@ exports.updateChatLastMessage = async (chatID, messageID) => {
 		{ new: true }
 	)
 		.populate("owner", "-password")
-		.populate.populate({
+		.populate({
 			path: "lastMessage",
 			populate: {
 				path: "sender",
