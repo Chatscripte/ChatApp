@@ -78,7 +78,6 @@ exports.createGroupChat = async (owner, title) => {
 		title,
 		owner,
 		inviteLink,
-		profile: "test.png",
 	});
 
 	if (!newChat) {
