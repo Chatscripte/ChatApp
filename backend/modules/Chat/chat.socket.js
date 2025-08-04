@@ -1,23 +1,23 @@
-const { createNewChat, getAll } = require("./chat.controller");
+const { createNewChat, getAll, getOne } = require("./chat.controller");
 
 exports.registerChatHandler = (io, socket) => {
-  socket.on("chat:create", async (data, cb) => {
-    try {
-      const result = await createNewChat(socket, data);
+	socket.on("chat:create", async (data, cb) => {
+		try {
+			const result = await createNewChat(socket, data);
 
-      if (result.success === false) {
-        return cb({
-          success: false,
-          message: result.message,
-          data: result.data ? result.data : undefined,
-        });
-      }
+			if (result.success === false) {
+				return cb({
+					success: false,
+					message: result.message,
+					data: result.data ? result.data : undefined,
+				});
+			}
 
-      const chatMembers = result.chat.members;
+			const chatMembers = result.chat.members;
 
-      chatMembers.forEach((member) => {
-        io.to(member.user._id.toString()).emit("chat:created", result);
-      });
+			chatMembers.forEach((member) => {
+				io.to(member.user._id.toString()).emit("chat:created", result);
+			});
 
 			cb({ success: true });
 		} catch (err) {
@@ -34,6 +34,23 @@ exports.registerChatHandler = (io, socket) => {
 			});
 
 			return cb({ success: true, chats });
+		} catch (err) {
+			return cb({ success: false, message: err.message });
+		}
+	});
+
+	socket.on("chat:get:one", async (data, cb) => {
+		try {
+			const result = await getOne(socket);
+
+			if (result.success === false) {
+				return cb({
+					success: false,
+					message: result.message,
+				});
+			}
+
+			return cb(result);
 		} catch (err) {
 			return cb({ success: false, message: err.message });
 		}

@@ -15,6 +15,23 @@ exports.getAll = async (socket) => {
 	}
 };
 
+exports.getOne = async (data) => {
+	const { chatID } = data;
+
+	const chat = await chatService.getChatDetails(chatID);
+
+	if (!chat) {
+		return {
+			success: false,
+			message: "Chat not found",
+		};
+	}
+
+	return {
+		success: true,
+		chat,
+	};
+};
 const createPv = async (ownerID, recipientUsername) => {
 	//* Validation
 	const validationResult = pvChatValidator.safeParse({

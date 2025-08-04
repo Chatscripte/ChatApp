@@ -15,3 +15,12 @@ exports.createMessage = async (messageData) => {
 
 	return message;
 };
+
+exports.findChatMessages = async (chatID) => {
+	const messaegs = await MessageModel.find({ chat: chatID })
+		.populate("sender", "-password")
+		.select("-chat")
+		.lean();
+
+	return messaegs;
+};

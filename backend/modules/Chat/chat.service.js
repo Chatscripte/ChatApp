@@ -1,9 +1,9 @@
 const ChatModel = require("./../../models/Chat");
 const MembershipModel = require("./../../models/Membership");
+const messageService = require("./../Message/message.service");
 const crypto = require("crypto");
 const configs = require("./../../configs");
 const { isValidObjectId } = require("mongoose");
-const { readSync } = require("fs");
 
 const isExistingPvChat = async (userA, userB) => {
 	const userAChats = await MembershipModel.find({ user: userA }).distinct(
@@ -142,15 +142,41 @@ exports.getAllChats = async (userID) => {
 		"chat"
 	);
 
-	const chats = await ChatModel.find({ _id: { $in: chatIds } }).populate({
-		path: "lastMessage",
-		populate: {
-			path: "sender",
-			model: "User",
-			select: "username",
-		},
-		select: "-updatedAt -chat",
-	});
+	const chats = await ChatModel.find({ _id: { $in: chatIds } })
+		.populate({
+			path: "lastMessage",
+			populate: {
+				path: "sender",
+				model: "User",
+				select: "username",
+			},
+			select: "-updatedAt -chat",
+		})
+		.lean();
 
 	return chats;
+};
+
+exports.getChatDetails = async (chatID) => {
+	if (!isValidObjectId(chatID)) return false;
+
+	const chatInfo = await ChatModel.findById(chatID)
+		.populate("owner", "-passowrd -updatedAt -createdAt")
+		.select("-lastMessage -updatedAt");
+
+	if (!chatInfo) return false;
+
+	const members = await MembershipModel.find({ chat: chatID })
+		.populate("user", "-password")
+		.select("user role -_id");
+
+	const messages = await messageService.findChatMessages(chatID);
+
+	const chat = {
+		chatInfo,
+		members,
+		messages,
+	};
+
+	return chat;
 };

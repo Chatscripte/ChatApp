@@ -7,6 +7,6 @@ const router = express.Router();
 router
 	.route("/")
 	.post(tokenAuth, controller.createNewChat)
-	.get(controller.getAll);
+	.get(controller.getOne);
 
 module.exports = router;
