@@ -25,7 +25,7 @@ $border-color: #424242;
     flex: 1 1 350px;
     /* Minimum width of 300px, grows flexibly */
     min-width: 350px;
-    max-width: 350px;
+    max-width: 370px;
     /* Optional max-width to prevent sidebar from growing too wide */
 
     .sidebar-paper {
@@ -74,14 +74,12 @@ $border-color: #424242;
       }
 
       .conversation-list {
-        padding: 11px;
         flex-grow: 1;
         /* Conversation list grows to fill sidebar */
         overflow-y: auto;
 
         .avatar {
           display: flex;
-
           justify-content: space-around;
           gap: 16px;
 
@@ -93,7 +91,6 @@ $border-color: #424242;
         }
 
         .conversation-item {
-          padding: 12px 16px;
           transition: background-color 0.2s;
           color: $text-primary;
           display: block;
@@ -102,9 +99,35 @@ $border-color: #424242;
 
           &:hover {
             background-color: lighten($sidebar-bg, 5%);
-            border-radius: 10px;
-
           }
+
+          .conversation-item-button {
+            position: relative;
+            padding: 0px !important;
+
+            &:hover {
+              background-color: transparent;
+            }
+          }
+
+          .avatar-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: $text-secondary;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: red;
+            font-size: 24px;
+
+            svg {
+              width: 30px;
+              height: 30px;
+              color: $text-primary;
+            }
+          }
+
 
           .last-message {
             color: $text-secondary;
@@ -120,22 +143,30 @@ $border-color: #424242;
             padding: 2px 6px;
             font-size: 0.75rem;
             position: relative;
-            left: 185px;
-            bottom: 22px;
+            left: 226px;
+            bottom: 26px;
           }
 
           .check-icon {
             color: $text-secondary;
             font-size: 0.75rem;
             position: relative;
-            left: 185px;
-            bottom: 32px;
+            left: 123px;
+            bottom: -4px;
           }
 
-          .time {
-            color: $text-secondary;
-            font-size: 0.75rem;
+          .avatar {
+
+
+            .time {
+              color: $text-secondary;
+              font-size: 0.75rem;
+              position: absolute;
+              right: 5px;
+              top: 2px;
+            }
           }
+
         }
       }
     }
@@ -377,4 +408,3 @@ $border-color: #424242;
     font-size: 20px;
   }
 }
-

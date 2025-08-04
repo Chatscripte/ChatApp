@@ -30,6 +30,7 @@ function ChatTemplate({ isChatOpend, currentChat, setIsDrawerOpen, isDrawerOpen 
         }
     }, []);
     const sendMessage = () => {
+        if (!message) return;
         // Send the message to the server
         socket.emit(SOCKET_EVENTS.CHAT_SEND_MESSAGE, {
             chatID: currentChat?._id.toString(),

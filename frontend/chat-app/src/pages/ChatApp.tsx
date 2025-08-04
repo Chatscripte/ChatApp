@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Grid, Box } from '@mui/material';
-import '../styles/ChatSystem.scss';
+import '../styles/ChatApp.scss';
 import socket, { updateSocketAuth } from '../lib/socket';
 import { useAuth } from '../hooks/useAuth';
 import { getCookie } from '../lib/helper';

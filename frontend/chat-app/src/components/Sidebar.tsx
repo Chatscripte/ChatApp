@@ -1,5 +1,5 @@
-import { Box, Grid, List, ListItem, ListItemText, Paper, ListItemButton } from '@mui/material';
-import  { useEffect, useState } from 'react'
+import { Box, Grid, List, ListItem, ListItemText, Paper, ListItemButton, Typography } from '@mui/material';
+import { useEffect, useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import AddGroup from './AddGroup';
@@ -7,12 +7,13 @@ import socket from '../lib/socket';
 import { SOCKET_EVENTS } from '../enums';
 import { useChatContext } from '../hooks/useChatContext';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function Sidebar({ setIsChatOpend, setCurrentChat , setAllChats , allChats }: any) {
+function Sidebar({ setIsChatOpend, setCurrentChat, setAllChats, allChats }: any) {
     const [isWantCreateGroup, setIsWantCreateGroup] = useState<boolean>(false);
     const { chatMembers } = useChatContext();
-     useEffect(() => {
+    useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         socket.emit(SOCKET_EVENTS.CHAT_GET_ALL, (data: any) => {
             setAllChats(data.chats);
@@ -40,27 +41,34 @@ function Sidebar({ setIsChatOpend, setCurrentChat , setAllChats , allChats }: an
                             <List className="conversation-list">
                                 {allChats?.map((conv) => (
                                     <ListItem key={conv._id} className="conversation-item">
-                                        <ListItemButton onClick={() => {
+                                        <ListItemButton className='conversation-item-button' onClick={() => {
                                             setIsChatOpend(true)
                                             setCurrentChat(conv)
                                         }}>
                                             <div className='avatar'>
-                                                <img src={`${conv.profile}`} alt={conv.title} />
+                                                {
+                                                    conv.profile ?
+                                                        <img src={`${conv.profile}`} alt={conv.title} className='avatar-image' />
+                                                        :
+                                                        <div className='avatar-icon'>
+                                                            <PeopleAltIcon />
+                                                        </div>
+                                                }
                                                 <ListItemText
                                                     primary={conv.title}
                                                     secondary={
                                                         <>
-                                                            {/* <Typography variant="body2" className="last-message">
-                                                                            {conv.lastMessage}
-                                                                        </Typography> */}
+                                                            <Typography variant="body2" className="last-message">
+                                                                it is ok
+                                                            </Typography>
                                                             <span className="unread-count">2</span>
-                                                            <DoneAllIcon className='check-icon' />
                                                         </>
                                                     }
                                                 />
-                                                {/* <Typography variant="caption" className="time">
-                                                                {conv.time}
-                                                            </Typography> */}
+                                                <DoneAllIcon className='check-icon' />
+                                                <Typography variant="caption" className="time">
+                                                    10:30 AM
+                                                </Typography>
                                             </div>
                                         </ListItemButton>
                                     </ListItem>
