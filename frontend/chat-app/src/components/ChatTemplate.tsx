@@ -9,6 +9,10 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import VerticalSplitIcon from '@mui/icons-material/VerticalSplit';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import AssignmentAddIcon from '@mui/icons-material/AssignmentAdd';
+import { useChatContext } from '../hooks/useChatContext';
+import { getCookie, parseToken } from '../lib/helper';
+import { useAuth } from '../hooks/useAuth';
+
 
 interface ChatTemplateProps {
     isChatOpend: boolean,
@@ -19,8 +23,19 @@ interface ChatTemplateProps {
 
 function ChatTemplate({ isChatOpend, currentChat, setIsDrawerOpen, isDrawerOpen }: ChatTemplateProps) {
     const [message, setMessage] = useState('');
-
+    const {chatInfo} = useChatContext();
+    const { currentUser, setCurrentUser } = useAuth();
+    const accessToken = getCookie('accessToken');
+      
     useEffect(() => {
+        if (accessToken) {
+            const parsedToken = parseToken(accessToken);
+            setCurrentUser(parsedToken);
+        }
+    },[accessToken])
+    
+    useEffect(() => {
+        console.log('get message');
         socket.on(SOCKET_EVENTS.CHAT_GET_MESSAGES, (data) => {
             console.log('Received messages:', data);
             // Handle incoming messages
@@ -29,6 +44,7 @@ function ChatTemplate({ isChatOpend, currentChat, setIsDrawerOpen, isDrawerOpen 
             socket.off(SOCKET_EVENTS.CHAT_GET_MESSAGES);
         }
     }, []);
+    
     const sendMessage = () => {
         if (!message) return;
         // Send the message to the server
@@ -40,12 +56,6 @@ function ChatTemplate({ isChatOpend, currentChat, setIsDrawerOpen, isDrawerOpen 
             setMessage('');
         });
     }
-    // Mock data for chat messages
-    const messages = [
-        { id: 1, sender: 'John Doe', text: 'Hey, how are you?', time: '10:30 AM', isSent: false },
-        { id: 2, sender: 'You', text: 'Doing great, thanks!', time: '10:32 AM', isSent: true },
-        { id: 3, sender: 'John Doe', text: 'Cool, want to grab coffee?', time: '10:35 AM', isSent: false },
-    ];
     const toggleDrawer = () => {
         setIsDrawerOpen(!isDrawerOpen);
     };
@@ -72,18 +82,18 @@ function ChatTemplate({ isChatOpend, currentChat, setIsDrawerOpen, isDrawerOpen 
 
                         {/* Messages Area */}
                         <Box className="messages">
-                            {messages.map((msg) => (
+                            {chatInfo?.messages?.map((msg) => (
                                 <Box
-                                    key={msg.id}
-                                    className={`message ${msg.isSent ? 'sent' : 'received'}`}
+                                    key={msg._id}
+                                    className={`message ${msg.sender._id === currentUser?.userID ? 'sent' : 'received'}`}
                                 >
                                     <Typography variant="body2" className="message-sender">
-                                        {msg.sender}
+                                        {msg.sender.username}
                                     </Typography>
                                     <Paper className="message-bubble">
                                         <Typography variant="body1">{msg.text}</Typography>
                                         <Typography variant="caption" className="message-time">
-                                            {msg.time}
+                                            {msg.sender.createdAt.substring(11, 16)}
                                         </Typography>
                                     </Paper>
                                 </Box>

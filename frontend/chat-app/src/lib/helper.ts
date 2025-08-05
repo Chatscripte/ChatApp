@@ -18,4 +18,15 @@ const deleteCookie = (name: string) => {
     setCookie(name, '', -1);
 };
 
-export { setCookie, getCookie, deleteCookie };
+const parseToken = (token: string) => {
+    if (!token) return null;
+    try {
+        const payload = token.split('.')[1];
+        return JSON.parse(atob(payload));
+    } catch (error) {
+        console.error("Failed to parse token:", error);
+        return null;
+    }
+}
+
+export { setCookie, getCookie, deleteCookie , parseToken };

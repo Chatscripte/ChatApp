@@ -12,7 +12,8 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function Sidebar({ setIsChatOpend, setCurrentChat, setAllChats, allChats }: any) {
     const [isWantCreateGroup, setIsWantCreateGroup] = useState<boolean>(false);
-    const { chatMembers } = useChatContext();
+    const { setChatInfo, isCreatedGroup } = useChatContext();
+
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         socket.emit(SOCKET_EVENTS.CHAT_GET_ALL, (data: any) => {
@@ -21,7 +22,17 @@ function Sidebar({ setIsChatOpend, setCurrentChat, setAllChats, allChats }: any)
         return () => {
             socket.off(SOCKET_EVENTS.CHAT_GET_ALL);
         }
-    }, [chatMembers])
+    }, [isCreatedGroup])
+
+    // Function to get chat information
+    const getChatInfo = (chatID: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        socket.emit(SOCKET_EVENTS.CHAT_GET_ONE, { chatID }, (data: any) => {
+            if (data.success) {
+                setChatInfo(data.chat);
+            }
+        });
+    }
     return (
         <Grid item xs={12} className="sidebar desktop-sidebar">
             <Paper elevation={3} className="sidebar-paper">
@@ -44,6 +55,7 @@ function Sidebar({ setIsChatOpend, setCurrentChat, setAllChats, allChats }: any)
                                         <ListItemButton className='conversation-item-button' onClick={() => {
                                             setIsChatOpend(true)
                                             setCurrentChat(conv)
+                                            getChatInfo(conv._id)
                                         }}>
                                             <div className='avatar'>
                                                 {

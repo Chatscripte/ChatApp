@@ -1,41 +1,51 @@
 import { createContext, useState } from "react";
 
 interface chatInfo {
-    owner: { id: string, username: string, createdAt: Date, updatedAt: Date },
-    profile: string,
-    title: string,
-    type: string,
-    inviteLink: string
-    createdAt: Date,
-    updatedAt: Date,
-    _id: string
+    chatInfo: {
+        _id: string;
+        createdAt: string;
+        inviteLink: string;
+        owner: { _id: string, password: string, username: string };
+        title: string;
+        type: string;
+    },
+    members: Array<{
+        role: string;
+        user: {
+            _id: string;
+            username: string;
+            createdAt: string;
+            updatedAt: string;
+        }
+    }>,
+    messages: Array<{
+        _id: string;
+        text: string;
+        createdAt: string;
+        updatedAt: string;
+        sender: {
+            _id: string;
+            username: string;
+            createdAt: string;
+            updatedAt: string;
+        };
+    }>
 }
-
-interface chatMember {
-    role: string,
-    user: {
-        _id: string,
-        username: string,
-        createdAt: Date,
-        updatedAt: Date
-    }
-}
-
 export interface ChatContextType {
     chatInfo: chatInfo | null;
     setChatInfo: React.Dispatch<React.SetStateAction<chatInfo | null>>;
-    chatMembers: chatMember[];
-    setChatMembers: React.Dispatch<React.SetStateAction<chatMember[]>>;
+    isCreatedGroup: boolean;
+    setIsCreatedGroup: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [chatInfo, setChatInfo] = useState<chatInfo | null>(null);
-    const [chatMembers, setChatMembers] = useState<chatMember[]>([]);
-
+    const [isCreatedGroup, setIsCreatedGroup] = useState<boolean>(false);
     return (
-        <ChatContext.Provider value={{ chatInfo, setChatInfo, chatMembers, setChatMembers }}>
+        <ChatContext.Provider value={{ chatInfo, setChatInfo, isCreatedGroup, setIsCreatedGroup }}>
             {children}
         </ChatContext.Provider>
     );
