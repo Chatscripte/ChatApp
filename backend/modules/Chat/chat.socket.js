@@ -30,7 +30,7 @@ exports.registerChatHandler = (io, socket) => {
 			const chats = await getAll(socket);
 
 			chats.forEach((chat) => {
-				socket.join(chat._id);
+				socket.join(chat._id.toString());
 			});
 
 			return cb({ success: true, chats });
