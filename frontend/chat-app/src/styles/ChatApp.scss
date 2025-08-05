@@ -8,6 +8,15 @@ $text-primary: #E0E0E0;
 $text-secondary: #B0B0B0;
 $border-color: #424242;
 
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $border-color;
+  border-radius: 4px;
+}
+
 .chat-system {
   height: 100vh;
   overflow: hidden;
