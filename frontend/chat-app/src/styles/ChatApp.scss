@@ -17,6 +17,7 @@ $border-color: #424242;
   border-radius: 4px;
 }
 
+
 .chat-system {
   height: 100vh;
   overflow: hidden;
@@ -308,7 +309,7 @@ $border-color: #424242;
         padding: 16px;
         border-top: 1px solid $border-color;
         background-color: $sidebar-bg;
-
+        position: relative;
 
         .attach-icon {
           color: $text-primary;
@@ -330,6 +331,8 @@ $border-color: #424242;
           right: 49px;
           z-index: 1;
         }
+
+
 
         input {
           padding-left: 40px;
