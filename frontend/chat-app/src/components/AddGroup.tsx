@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import '../styles/AddGroup.scss'
 import { Box, CircularProgress } from '@mui/material'
 import socket from '../lib/socket'
@@ -16,7 +16,7 @@ function AddGroup({ setIsWantCreateGroup }: AddGroupProps) {
   const [groupTitle, setGroupTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const {  setChatInfo, setChatMembers } = useChatContext();
+  const { setIsCreatedGroup } = useChatContext();
 
   // Handle group creation
   const createChat = useCallback(() => {
@@ -43,9 +43,9 @@ function AddGroup({ setIsWantCreateGroup }: AddGroupProps) {
       SOCKET_EVENTS.CHAT_CREATE,
       { type: 'group', title: groupTitle.trim() },
       (response: { success: boolean; message?: string; data?: unknown }) => {
-        console.log('SOCKET_EVENTS.CHAT_CREATE response:', response);
         setIsLoading(false);
         if (response.success) {
+          setIsCreatedGroup(true);
           toast.update(toastId, {
             render: "Group created successfully!",
             type: "success",
@@ -55,9 +55,6 @@ function AddGroup({ setIsWantCreateGroup }: AddGroupProps) {
           setGroupTitle('');
           // Delay closing the form to ensure toast shows
           setTimeout(() => setIsWantCreateGroup(false), 1000);
-          socket.on(SOCKET_EVENTS.CHAT_CREATED, (data) => {
-            console.log(data);
-          })
         } else {
           toast.update(toastId, {
             render: response.message || 'Failed to create group',
@@ -68,15 +65,7 @@ function AddGroup({ setIsWantCreateGroup }: AddGroupProps) {
         }
       }
     );
-  }, [groupTitle, setIsWantCreateGroup]);
-
-  useEffect(() => {
-    socket.on(SOCKET_EVENTS.CHAT_CREATED, (data) => {
-      console.log(data);
-      setChatInfo(data.chat.chatInfo);
-      setChatMembers(data.chat.members);
-    })
-  }, [groupTitle])
+  }, [groupTitle,setIsWantCreateGroup]);
 
   return (
     <>
