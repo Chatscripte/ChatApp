@@ -15,7 +15,7 @@ exports.registerMessageHandler = (io, socket) => {
 
 			const chatID = data.chatID;
 
-			io.to(chatID).emit("meessage:sent", result);
+			io.to(chatID).emit("message:sent", result);
 
 			cb({ success: true });
 		} catch (err) {
