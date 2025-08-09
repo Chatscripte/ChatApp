@@ -23,8 +23,8 @@ const messageSchema = z.object({
 
 	location: z
 		.object({
-			x: z.number(),
-			y: z.number(),
+			lat: z.number(),
+			long: z.number(),
 		})
 		.optional(),
 });
