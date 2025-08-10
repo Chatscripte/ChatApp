@@ -68,7 +68,7 @@ function MessageInput({ currentChat, setMessages, messages, messagesEndRef }: { 
     const handleMouseEnter = useCallback(() => {
         setIsSendFileTypeVisible(true);
     }, []);
-    
+
     return (
         <Box className="message-input">
             <AttachFileIcon
