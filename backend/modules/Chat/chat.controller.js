@@ -2,17 +2,26 @@ const validatorErrorHandler = require("../../sockets/helpers/socketValidatorErro
 const chatService = require("./chat.service");
 const authService = require("./../Auth/auth.service");
 const { pvChatValidator, groupChatValidator } = require("./chat.validator");
+const { successResponse } = require("../../helpers/responses");
 
-exports.getAll = async (socket) => {
+exports.findChats = async (req, res, next) => {
 	try {
-		const userID = socket.user._id;
+		const { search } = req.body;
 
-		const chats = await chatService.getAllChats(userID);
+		const results = await chatService.searchChats(search);
 
-		return chats;
+		return successResponse(res, 200, results);
 	} catch (err) {
 		next(err);
 	}
+};
+
+exports.getAll = async (socket) => {
+	const userID = socket.user._id;
+
+	const chats = await chatService.getAllChats(userID);
+
+	return chats;
 };
 
 exports.getOne = async (data) => {

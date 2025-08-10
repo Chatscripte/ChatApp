@@ -4,6 +4,8 @@ const messageService = require("./../Message/message.service");
 const crypto = require("crypto");
 const configs = require("./../../configs");
 const { isValidObjectId } = require("mongoose");
+const { title } = require("process");
+const { profile } = require("console");
 
 const isExistingPvChat = async (userA, userB) => {
 	const userAChats = await MembershipModel.find({ user: userA }).distinct(
@@ -178,4 +180,32 @@ exports.getChatDetails = async (chatID) => {
 	};
 
 	return chat;
+};
+
+exports.searchChats = async (search) => {
+	const results = await ChatModel.aggregate([
+		{
+			$match: { title: { $regex: search, $options: "i" } },
+		},
+		{
+			$addFields: {
+				exactMatch: {
+					$eq: [{ $toLower: "$title" }, search.toLowerCase()],
+				},
+			},
+		},
+		{
+			$sort: { exactMatch: -1, title: 1 },
+		},
+		{
+			$project: {
+				_id: 1,
+				title: 1,
+				profile: 1,
+				exactMatch: 1,
+			},
+		},
+	]);
+
+	return results;
 };
