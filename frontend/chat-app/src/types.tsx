@@ -11,6 +11,8 @@ export interface Message {
     sender: { _id: string; username: string };
     text: string;
     fileUrl?: string;
+    location?: { lat: number; long: number, _id: string };
+    staticImageLocation?: string
 }
 
 

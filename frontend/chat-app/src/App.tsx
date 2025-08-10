@@ -5,15 +5,21 @@ import { Route, Routes } from 'react-router-dom'
 import RouteProtection from './routeProtection/RouteProtection'
 import { AuthProvider } from './Contexts/AuthContext'
 import { ChatProvider } from './Contexts/ChatContext'
+import { ShowPopupsContextProvider } from './Contexts/ShowPopupsContext'
+import { LocationMessageContextProvider } from './Contexts/LocationMessageContext'
 function App() {
   return (
     <>
       <AuthProvider>
         <ChatProvider>
-          <Routes>
-            <Route path="/" element={<SignIn />} />
-            <Route path="/chat" element={<RouteProtection><ChatApp /></RouteProtection>} />
-          </Routes>
+          <ShowPopupsContextProvider>
+            <LocationMessageContextProvider>
+              <Routes>
+                <Route path="/" element={<SignIn />} />
+                <Route path="/chat" element={<RouteProtection><ChatApp /></RouteProtection>} />
+              </Routes>
+            </LocationMessageContextProvider>
+          </ShowPopupsContextProvider>
         </ChatProvider>
       </AuthProvider>
     </>
