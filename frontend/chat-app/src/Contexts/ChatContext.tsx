@@ -29,6 +29,12 @@ interface chatInfo {
             createdAt: string;
             updatedAt: string;
         };
+        fileUrl?: string;
+        location?: {
+            lat: number;
+            long: number;
+            _id: string;
+        }
     }>
 }
 export interface ChatContextType {
