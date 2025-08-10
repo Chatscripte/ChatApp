@@ -6,9 +6,9 @@ const { successResponse } = require("../../helpers/responses");
 
 exports.findChats = async (req, res, next) => {
 	try {
-		const { search } = req.body;
+		const { keyword } = req.body;
 
-		const results = await chatService.searchChats(search);
+		const results = await chatService.searchChats(keyword);
 
 		return successResponse(res, 200, results);
 	} catch (err) {

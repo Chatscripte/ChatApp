@@ -4,9 +4,8 @@ const tokenAuth = require("../../middlewares/tokenAuth");
 
 const router = express.Router();
 
-router
-	.route("/")
-	.post(tokenAuth, controller.createNewChat)
-	.get(controller.findChats);
+router.route("/").post(tokenAuth, controller.createNewChat);
+
+router.route("/search").post(controller.findChats);
 
 module.exports = router;

@@ -182,15 +182,15 @@ exports.getChatDetails = async (chatID) => {
 	return chat;
 };
 
-exports.searchChats = async (search) => {
+exports.searchChats = async (keyword) => {
 	const results = await ChatModel.aggregate([
 		{
-			$match: { title: { $regex: search, $options: "i" } },
+			$match: { title: { $regex: keyword, $options: "i" } },
 		},
 		{
 			$addFields: {
 				exactMatch: {
-					$eq: [{ $toLower: "$title" }, search.toLowerCase()],
+					$eq: [{ $toLower: "$title" }, keyword.toLowerCase()],
 				},
 			},
 		},

@@ -19,6 +19,9 @@
 		},
 		{
 			"name": "User"
+		},
+		{
+			"name": "Chat"
 		}
 	],
 	"paths": {
@@ -95,6 +98,27 @@
 				"responses": {
 					"200": { "description": "Successfully updated!" },
 					"500": { "description": "Internal Server Error" }
+				}
+			}
+		},
+		"/api/chat/search": {
+			"post": {
+				"tags": ["Chat"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"example": {
+									"keyword": "Text"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": { "description": "User datas" },
+					"404": { "description": "User not found" }
 				}
 			}
 		}
