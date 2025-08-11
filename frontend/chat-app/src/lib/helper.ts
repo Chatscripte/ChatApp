@@ -29,4 +29,24 @@ const parseToken = (token: string) => {
     }
 }
 
-export { setCookie, getCookie, deleteCookie , parseToken };
+const isMobile = () => {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+};
+
+const getMapUrls = (location: { lat: number | undefined; lng: number | undefined }) => {
+    if (!location?.lat || !location?.lng) {
+        return { primary: '#', fallback: '#' };
+    }
+    const neshanApp = `neshan://map?lat=${location.lat}&lon=${location.lng}`;
+    const neshanWeb = `https://neshan.org/maps/@${location.lat},${location.lng},15z`;
+    const googleMaps = `https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}`;
+    return {
+        primary: isMobile() ? neshanApp : neshanWeb,
+        fallback: googleMaps,
+    };
+};
+
+
+
+
+export { setCookie, getCookie, deleteCookie, parseToken, getMapUrls, isMobile };

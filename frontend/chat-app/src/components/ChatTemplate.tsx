@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {  Grid, Paper } from '@mui/material';
+import { Grid, Paper } from '@mui/material';
 import AssignmentAddIcon from '@mui/icons-material/AssignmentAdd';
 import { getCookie, parseToken } from '../lib/helper';
 import { useAuth } from '../hooks/useAuth';
@@ -7,14 +7,15 @@ import MessageInput from './MessageInput';
 import MessagesArea from './MessagesArea';
 import type { ChatTemplateProps, Message } from '../types';
 import ChatHeader from './ChatHeader';
+import { useChatContext } from '../hooks/useChatContext';
 
 
-function ChatTemplate({ isChatOpend, currentChat, setIsDrawerOpen, isDrawerOpen }: ChatTemplateProps) {
+function ChatTemplate({ setIsDrawerOpen, isDrawerOpen }: ChatTemplateProps) {
     const { currentUser, setCurrentUser } = useAuth();
     const accessToken = getCookie('accessToken');
     const [messages, setMessages] = useState<Message[]>([]); // Combine chatInfo.messages and newMessages
     const messagesEndRef = useRef<HTMLDivElement | null>(null); // For auto-scrolling to latest message
-
+    const { currentChat, isChatOpend } = useChatContext();
     // Parse access token only once on mount or when accessToken changes
     useEffect(() => {
         if (accessToken) {
@@ -32,7 +33,7 @@ function ChatTemplate({ isChatOpend, currentChat, setIsDrawerOpen, isDrawerOpen 
             {isChatOpend ? (
                 <Paper elevation={3} className="chat-paper">
                     {/* Chat Header */}
-                   <ChatHeader currentChat={currentChat} toggleDrawer={toggleDrawer} />
+                    <ChatHeader currentChat={currentChat} toggleDrawer={toggleDrawer} />
                     {/* Messages Area */}
                     <MessagesArea messages={messages} messagesEndRef={messagesEndRef} currentUser={currentUser} />
                     {/* Message Input */}
@@ -40,7 +41,7 @@ function ChatTemplate({ isChatOpend, currentChat, setIsDrawerOpen, isDrawerOpen 
                 </Paper>
             ) : (
                 <div className="empty-chats-tem">
-                    <p>You don't have any chat yet, start here</p>
+                    <p>select a chat to start messaging</p>
                     <AssignmentAddIcon />
                 </div>
             )}
