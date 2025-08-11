@@ -42,6 +42,12 @@ export interface ChatContextType {
     setChatInfo: React.Dispatch<React.SetStateAction<chatInfo | null>>;
     isCreatedGroup: boolean;
     setIsCreatedGroup: React.Dispatch<React.SetStateAction<boolean>>;
+    isSearchingChats: boolean;
+    setIsSearchingChats: React.Dispatch<React.SetStateAction<boolean>>;
+    isChatOpend: boolean;
+    setIsChatOpend: React.Dispatch<React.SetStateAction<boolean>>;
+    currentChat: { _id: string; title: string; profile: string } | null;
+    setCurrentChat: React.Dispatch<React.SetStateAction<{ _id: string; title: string; profile: string } | null>>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -50,11 +56,12 @@ export const ChatContext = createContext<ChatContextType | undefined>(undefined)
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [chatInfo, setChatInfo] = useState<chatInfo | null>(null);
     const [isCreatedGroup, setIsCreatedGroup] = useState<boolean>(false);
+    const [isSearchingChats, setIsSearchingChats] = useState<boolean>(false);
+    const [isChatOpend, setIsChatOpend] = useState<boolean>(false);
+    const [currentChat, setCurrentChat] = useState<{ _id: string; title: string; profile: string } | null>(null);
     return (
-        <ChatContext.Provider value={{ chatInfo, setChatInfo, isCreatedGroup, setIsCreatedGroup }}>
+        <ChatContext.Provider value={{ isChatOpend, setIsChatOpend, currentChat, setCurrentChat, chatInfo, setChatInfo, isCreatedGroup, setIsCreatedGroup, isSearchingChats, setIsSearchingChats }}>
             {children}
         </ChatContext.Provider>
     );
 };
-
-

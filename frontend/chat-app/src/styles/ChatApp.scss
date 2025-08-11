@@ -73,8 +73,17 @@ $border-color: #424242;
           color: $text-secondary;
           font-size: 27px;
         }
-      }
 
+        .close-icon {
+          position: absolute;
+          right: 25px;
+          top: 55%;
+          transform: translateY(-50%);
+          color: $text-secondary;
+          font-size: 27px;
+          cursor: pointer;
+        }
+      }
 
       .sidebar-title {
         padding: 16px;
@@ -402,10 +411,6 @@ $border-color: #424242;
   p,
   svg {
     color: #37474F;
-  }
-
-  svg {
-    cursor: pointer;
   }
 }
 

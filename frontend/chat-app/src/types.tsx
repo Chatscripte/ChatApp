@@ -1,6 +1,4 @@
 export interface ChatTemplateProps {
-    isChatOpend: boolean;
-    currentChat: { _id: string; title: string; profile: string } | null;
     setIsDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
     isDrawerOpen: boolean;
 }

@@ -6,6 +6,7 @@ import '../styles/MessageArea.scss';
 import { useShowPopups } from '../hooks/useShowPopups';
 import SelectLocationPopup from '../popups/SelectLocationPopup';
 import { useCallback, useEffect, useState } from 'react';
+import {  getMapUrls, isMobile } from '../lib/helper';
 
 interface ChatTemplateProps {
     messages: Message[];
@@ -72,7 +73,23 @@ function MessagesArea({ messages, messagesEndRef, currentUser }: ChatTemplatePro
         );
     };
 
-    const renderMessageContent = (msg: Message) => {
+    const handleMapClick = (location: { lat: number | undefined; lng: number | undefined }, event: React.MouseEvent) => {
+        event.preventDefault();
+        const { primary, fallback } = getMapUrls(location);
+        if (isMobile()) {
+            // Try primary (Neshan app)
+            window.location.href = primary;
+            // Set timeout to fall back to Google Maps if app doesn't open
+            setTimeout(() => {
+                window.location.href = fallback;
+            }, 1000);
+        } else {
+            // Open web URL directly
+            window.open(primary, '_blank', 'noopener,noreferrer');
+        }
+    };
+
+    const renderMessageContent = (msg: Message, filteredLocationMessages: Message[]) => {
         if (msg.fileUrl) {
             return (
                 <Box className="message-file">
@@ -116,24 +133,28 @@ function MessagesArea({ messages, messagesEndRef, currentUser }: ChatTemplatePro
             );
         }
         if (msg.location && !msg.fileUrl && !msg.text) {
-            return (
-                <Box className="message-file">
-                    {loadingStates[msg._id] ? (
-                        <CircularProgress style={{ color: 'green' }} />
-                    ) : msg.staticImageLocation ? (
-                        <img
-                            src={msg.staticImageLocation}
-                            style={{ maxWidth: '100%', maxHeight: '100%', width: '300px', height: 'auto' }}
-                            alt="Location Map"
-                            className="message-image"
-                        />
-                    ) : (
-                        <Typography variant="body2" color="error">
-                            Failed to load map
-                        </Typography>
-                    )}
-                </Box>
-            );
+            return filteredLocationMessages.map((msg) => {
+                return (
+                    <Box className="message-file">
+                        {loadingStates[msg._id] ? (
+                            <CircularProgress style={{ color: 'green' }} />
+                        ) : msg.staticImageLocation ? (
+                            <Link to={'#'} onClick={(e) => handleMapClick({ lat: msg?.location?.lat, lng: msg?.location?.long }, e)}>
+                                <img
+                                    src={msg.staticImageLocation}
+                                    style={{ maxWidth: '100%', maxHeight: '100%', width: '300px', height: 'auto' }}
+                                    alt="Location Map"
+                                    className="message-image"
+                                />
+                            </Link>
+                        ) : (
+                            <Typography variant="body2" color="error">
+                                Failed to load map
+                            </Typography>
+                        )}
+                    </Box>
+                );
+            })
         }
         return null;
     };
@@ -162,7 +183,7 @@ function MessagesArea({ messages, messagesEndRef, currentUser }: ChatTemplatePro
                         </Typography>
                         <Paper className="message-bubble">
                             <Typography variant="body1">{msg.text}</Typography>
-                            {renderMessageContent(msg)}
+                            {renderMessageContent(msg, filteredLocationMessages)}
                             <Typography variant="caption" className="message-time">
                                 {msg.createdAt.substring(11, 16)}
                             </Typography>
