@@ -45,3 +45,27 @@ exports.createAccessToken = (userID) => {
 
 	return accessToken;
 };
+
+exports.createRefreshToken = (userId) => {
+	const refreshToken = jwt.sign(
+		{ userId },
+		configs.auth.refreshTokenSecretKey,
+		{ expiresIn: configs.auth.refreshTokenExpriesInSeconds }
+	);
+
+	return refreshToken;
+};
+
+exports.verifyRefreshToken = async (refreshToken) => {
+	const payload = jwt.verify(
+		refreshToken,
+		configs.auth.refreshTokenSecretKey,
+		(err, decoded) => {
+			if (err) {
+				return false;
+			}
+			return decoded;
+		}
+	);
+	return payload;
+};

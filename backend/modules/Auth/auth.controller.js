@@ -1,3 +1,4 @@
+const { signedCookie } = require("cookie-parser");
 const { errorResponse, successResponse } = require("../../helpers/responses");
 const validatorErrorHandler = require("../../helpers/validatorErrorHandler");
 const authService = require("./auth.service");
@@ -41,7 +42,17 @@ exports.authOrRegister = async (req, res, next) => {
 			return errorResponse(res, 400, "Inccorect password");
 		}
 
-		const accessToken = authService.createAccessToken(user._id);
+		const [accessToken, refreshToken] = await Promise.all([
+			authService.createAccessToken(user._id),
+			authService.createRefreshToken(user._id),
+		]);
+
+		res.cookie("refreshToken", refreshToken, {
+			httpOnly: true,
+			sameSite: "Strict",
+			secure: true,
+			signed: true,
+		});
 		return successResponse(res, 201, { accessToken, isNew: false });
 	} catch (err) {
 		next(err);
@@ -52,6 +63,28 @@ exports.getMe = async (req, res, next) => {
 	try {
 		const user = req.user;
 		return successResponse(res, 200, user);
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.getNewAccessToken = async (req, res, next) => {
+	try {
+		const { refreshToken } = req.signedCookies;
+
+		if (!refreshToken) {
+			return errorResponse(res, 401, "Refresh Token Not Found");
+		}
+
+		const decoded = await authService.verifyRefreshToken(refreshToken);
+
+		if (!decoded) {
+			return errorResponse(res, 401, "Invalid Or Expired Refresh token");
+		}
+
+		const accessToken = authService.createAccessToken(decoded.userId);
+
+		return successResponse(res, 200, { accessToken });
 	} catch (err) {
 		next(err);
 	}
