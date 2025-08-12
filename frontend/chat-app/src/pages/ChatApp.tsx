@@ -12,10 +12,8 @@ import SidebarDrawer from '../components/SidebarDrawer';
 
 function ChatApp() {
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-    const [isChatOpend, setIsChatOpend] = useState<boolean>(false);
-    const [allChats, setAllChats] = useState<{ _id: string, title: string, profile: string }[]>([]);
+    const [allChats, setAllChats] = useState<{ _id: string, title: string, profile?: string }[]>([]);
     const { accessToken, setAccessToken } = useAuth();
-    const [currentChat, setCurrentChat] = useState<{ _id: string, title: string, profile: string } | null>(null);
 
     useEffect(() => {
         const token = getCookie('accessToken');
@@ -48,8 +46,7 @@ function ChatApp() {
             <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} closeOnClick draggable pauseOnHover />
             <Grid container className="chat-container">
                 {/* Sidebar: Conversation List (Desktop) */}
-                <Sidebar setIsChatOpend={setIsChatOpend}
-                    setCurrentChat={setCurrentChat} setAllChats={setAllChats} allChats={allChats} />
+                <Sidebar setAllChats={setAllChats} allChats={allChats} />
                 {/* Mobile Sidebar (Drawer) */}
                 <SidebarDrawer
                     isDrawerOpen={isDrawerOpen}
@@ -58,8 +55,7 @@ function ChatApp() {
                     toggleDrawer={() => setIsDrawerOpen(!isDrawerOpen)}
                 />
                 {/* Main Chat Area */}
-                <ChatTemplate isChatOpend={isChatOpend}
-                    currentChat={currentChat}
+                <ChatTemplate
                     isDrawerOpen={isDrawerOpen}
                     setIsDrawerOpen={setIsDrawerOpen} />
             </Grid>

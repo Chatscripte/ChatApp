@@ -1,18 +1,26 @@
-import { Box, Grid, List, ListItem, ListItemText, Paper, ListItemButton, Typography } from '@mui/material';
-import { useEffect, useState } from 'react'
+import { Box, Grid, List, Paper } from '@mui/material';
+import { useDeferredValue, useEffect, useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
+import SearchResults from './SearchResults';
 import AddGroup from './AddGroup';
 import socket from '../lib/socket';
 import { SOCKET_EVENTS } from '../enums';
 import { useChatContext } from '../hooks/useChatContext';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import ChatItem from './ChatItem';
+import CloseIcon from '@mui/icons-material/Close';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function Sidebar({ setIsChatOpend, setCurrentChat, setAllChats, allChats }: any) {
+interface SidebarProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setAllChats: React.Dispatch<React.SetStateAction<any>>;
+    allChats: { _id: string, title: string, profile?: string }[];
+}
+
+function Sidebar({ setAllChats, allChats }: SidebarProps) {
     const [isWantCreateGroup, setIsWantCreateGroup] = useState<boolean>(false);
-    const { setChatInfo, isCreatedGroup } = useChatContext();
+    const { setChatInfo, isCreatedGroup, isSearchingChats, setIsSearchingChats } = useChatContext();
+    const [query, setQuery] = useState<string>('');
+    const searchedValue = useDeferredValue(query);
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,6 +41,7 @@ function Sidebar({ setIsChatOpend, setCurrentChat, setAllChats, allChats }: any)
             }
         });
     }
+
     return (
         <Grid item xs={12} className="sidebar desktop-sidebar">
             <Paper elevation={3} className="sidebar-paper">
@@ -44,48 +53,28 @@ function Sidebar({ setIsChatOpend, setCurrentChat, setAllChats, allChats }: any)
                         <>
                             <Box className="search-bar-container">
                                 <SearchIcon className='search-icon' />
-                                <input type="text" className='search-bar' placeholder='Search...' />
+                                <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} className='search-bar' placeholder='Search...' />
+                                {
+                                    isSearchingChats &&
+                                    <CloseIcon onClick={() => {
+                                        setQuery('')
+                                        setIsSearchingChats(false)
+                                    }} className='close-icon' />
+                                }
                             </Box>
+                            <SearchResults query={searchedValue} />
                             <Box className="chats-types">
                                 <GroupAddIcon onClick={() => setIsWantCreateGroup(true)} />
                             </Box>
-                            <List className="conversation-list">
-                                {allChats?.map((conv) => (
-                                    <ListItem key={conv._id} className="conversation-item">
-                                        <ListItemButton className='conversation-item-button' onClick={() => {
-                                            setIsChatOpend(true)
-                                            setCurrentChat(conv)
-                                            getChatInfo(conv._id)
-                                        }}>
-                                            <div className='avatar'>
-                                                {
-                                                    conv.profile ?
-                                                        <img src={`${conv.profile}`} alt={conv.title} className='avatar-image' />
-                                                        :
-                                                        <div className='avatar-icon'>
-                                                            <PeopleAltIcon />
-                                                        </div>
-                                                }
-                                                <ListItemText
-                                                    primary={conv.title}
-                                                    secondary={
-                                                        <>
-                                                            <Typography variant="body2" className="last-message">
-                                                                it is ok
-                                                            </Typography>
-                                                            <span className="unread-count">2</span>
-                                                        </>
-                                                    }
-                                                />
-                                                <DoneAllIcon className='check-icon' />
-                                                <Typography variant="caption" className="time">
-                                                    10:30 AM
-                                                </Typography>
-                                            </div>
-                                        </ListItemButton>
-                                    </ListItem>
-                                ))}
-                            </List>
+                            {
+                                !isSearchingChats &&
+                                <List className="conversation-list">
+                                    {allChats?.map((conv) => (
+                                        <ChatItem key={conv._id} conv={conv}
+                                            getChatInfo={getChatInfo} />
+                                    ))}
+                                </List>
+                            }
                         </>
                 }
             </Paper>
