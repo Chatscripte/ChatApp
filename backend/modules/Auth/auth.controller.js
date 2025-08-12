@@ -84,7 +84,7 @@ exports.getNewAccessToken = async (req, res, next) => {
 
 		const accessToken = authService.createAccessToken(decoded.userId);
 
-		return successResponse(res, 200, { accessToken });
+		return successResponse(res, 201, { accessToken });
 	} catch (err) {
 		next(err);
 	}

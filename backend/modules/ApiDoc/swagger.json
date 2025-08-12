@@ -60,6 +60,22 @@
 				}
 			}
 		},
+		"/api/auth/refresh-token": {
+			"post": {
+				"tags": ["Auth"],
+				"responses": {
+					"201": {
+						"description": "Access token created"
+					},
+					"401": {
+						"description": "Not found token or Expired Token"
+					},
+					"500": {
+						"description": "Internal Error"
+					}
+				}
+			}
+		},
 		"/api/auth/getMe": {
 			"get": {
 				"security": [
