@@ -12,6 +12,10 @@ interface ChatItemProps {
 
 function ChatItem({ conv, getChatInfo }: ChatItemProps) {
     const { setIsChatOpend, setCurrentChat } = useChatContext();
+    if (!conv || !setIsChatOpend || !setCurrentChat || !getChatInfo) {
+        console.warn('Missing required props');
+        return null;
+    }
     return (
         <ListItem key={conv?._id} className="conversation-item">
             <ListItemButton className='conversation-item-button' onClick={() => {
@@ -34,7 +38,10 @@ function ChatItem({ conv, getChatInfo }: ChatItemProps) {
                         primary={conv?.title}
                         secondary={
                             <>
-                                <Typography variant="body2" className="last-message">
+                                <Typography
+                                    component={'span'}
+                                    variant="body2"
+                                    className="last-message">
                                     it is ok
                                 </Typography>
                                 <span className="unread-count">2</span>
@@ -42,7 +49,10 @@ function ChatItem({ conv, getChatInfo }: ChatItemProps) {
                         }
                     />
                     <DoneAllIcon className='check-icon' />
-                    <Typography variant="caption" className="time">
+                    <Typography
+                        component={'span'}
+                        variant="caption"
+                        className="time">
                         10:30 AM
                     </Typography>
                 </div>

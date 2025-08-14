@@ -22,6 +22,8 @@ const SignIn = () => {
   const [error, setError] = useState<{ general?: string; identifier?: string; password?: string }>({});
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     // validation 
@@ -35,9 +37,9 @@ const SignIn = () => {
           },
           body: JSON.stringify({ identifier, password }),
         });
-         if (result.status === 400) {
-           setError({ general: 'Incorrect Password' });
-         }
+        if (result.status === 400) {
+          setError({ general: 'Incorrect Password' });
+        }
         const { data } = await result.json();
         setCookie('accessToken', data.accessToken, import.meta.env.VITE_ACCESS_TOKEN_EXPIRES_IN_SECONDS);
         navigate('/chat');
