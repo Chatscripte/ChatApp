@@ -3,7 +3,7 @@ import { Grid, Box } from '@mui/material';
 import '../styles/ChatApp.scss';
 import socket, { updateSocketAuth } from '../lib/socket';
 import { useAuth } from '../hooks/useAuth';
-import { getCookie } from '../lib/helper';
+import { getCookie, refreshAccessToken } from '../lib/helper';
 import { ToastContainer } from 'react-toastify';
 import Sidebar from '../components/Sidebar';
 import ChatTemplate from '../components/ChatTemplate';
@@ -14,7 +14,16 @@ function ChatApp() {
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
     const [allChats, setAllChats] = useState<{ _id: string, title: string, profile?: string }[]>([]);
     const { accessToken, setAccessToken } = useAuth();
+    const accessTokenExpiresInSeconds = import.meta.env.VITE_ACCESS_TOKEN_EXPIRES_IN_SECONDS;
 
+    // Refresh access token
+    useEffect(() => {
+        setTimeout(() => {
+            refreshAccessToken();
+        }, accessTokenExpiresInSeconds);
+    }, [accessToken]);
+
+    // Connect to WebSocket
     useEffect(() => {
         const token = getCookie('accessToken');
         if (token) {
