@@ -22,7 +22,12 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser(configs.auth.refreshTokenSecretKey));
 
 //* CORS Policy
-app.use(cors());
+app.use(
+	cors({
+		origin: "http://localhost:5173/",
+		credentials: true,
+	})
+);
 
 //* Statics
 app.use(
