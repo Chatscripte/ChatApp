@@ -7,15 +7,17 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { useChatContext } from '../hooks/useChatContext';
 import SendIcon from '@mui/icons-material/Send';
 import type { Message } from '../types';
-
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import EmojiPickerComponent from './EmojiPicker';
 
 function MessageInput({ currentChat, setMessages, messages, messagesEndRef }: { currentChat: { _id: string } | null, setMessages: React.Dispatch<React.SetStateAction<Message[]>>, messages: Message[], messagesEndRef: React.RefObject<HTMLDivElement | null> }) {
     const [message, setMessage] = useState('');
     const { chatInfo } = useChatContext();
     const attachIcon = useRef<SVGSVGElement | null>(null);
     const [isSendFileTypeVisible, setIsSendFileTypeVisible] = useState(false);
+    const [isShowEmojiPicker, setIsShowEmojiPicker] = useState(false);
     const [file, setFile] = useState<File | null>(null);
-    
+
     // Set up socket listener for incoming messages
     useEffect(() => {
         if (!currentChat?._id) return;
@@ -69,32 +71,45 @@ function MessageInput({ currentChat, setMessages, messages, messagesEndRef }: { 
         setIsSendFileTypeVisible(true);
     }, []);
 
+    const handleShowEmoji = () => {
+        setIsShowEmojiPicker(!isShowEmojiPicker);
+    }
     return (
-        <Box className="message-input">
-            <AttachFileIcon
-                className="attach-icon"
-                onMouseOver={handleMouseEnter}
-                ref={attachIcon} />
-            <TextField
-                fullWidth
-                variant="outlined"
-                placeholder="Type a message..."
-                className="input-field"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        sendMessage();
-                    }
-                }}
-            />
-            <SendIcon
-                className="send-icon"
-                onClick={sendMessage}
-            />
-            {isSendFileTypeVisible && <SendFileType file={file} setFile={setFile} setIsSendFileTypeVisible={setIsSendFileTypeVisible} />}
-        </Box>
+        <>
+            <div className='emoji'>
+                {isShowEmojiPicker && <EmojiPickerComponent
+                    setMessage={setMessage}
+                    setIsShowEmojiPicker={setIsShowEmojiPicker} />}
+            </div>
+            <Box className="message-input">
+                <div className='input-icons'>
+                    <AttachFileIcon
+                        className="attach-icon"
+                        onMouseOver={handleMouseEnter}
+                        ref={attachIcon} />
+                    <SentimentSatisfiedAltIcon className='smile-icon' onMouseOver={handleShowEmoji} />
+                </div>
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    placeholder="Type a message..."
+                    className="input-field"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendMessage();
+                        }
+                    }}
+                />
+                <SendIcon
+                    className="send-icon"
+                    onClick={sendMessage}
+                />
+                {isSendFileTypeVisible && <SendFileType file={file} setFile={setFile} setIsSendFileTypeVisible={setIsSendFileTypeVisible} />}
+            </Box>
+        </>
     )
 }
 

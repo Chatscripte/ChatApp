@@ -54,9 +54,9 @@ async function refreshAccessToken() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        credentials: 'include',
       },
     });
-
     if (!response.ok) {
       throw new Error('Failed to refresh token');
     }
@@ -71,8 +71,6 @@ async function refreshAccessToken() {
     return newAccessToken;
   } catch (error) {
     console.error('Error refreshing access token:', error);
-    // Handle token refresh failure (e.g., redirect to login)
-    window.location.href = '/login';
   }
 }
 

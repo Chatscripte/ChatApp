@@ -314,20 +314,38 @@ $border-color: #424242;
         }
       }
 
+      .emoji {
+        position: relative;
+      }
+
       .message-input {
         display: flex;
         padding: 16px;
         border-top: 1px solid $border-color;
         background-color: $sidebar-bg;
         position: relative;
+        width: 100%;
+        
+
+      
+
+        .input-icons {
+          position: absolute;
+          top: 37%;
+          left: 26px;
+          z-index: 1;
+
+          .smile-icon {
+            color: $text-primary;
+            cursor: pointer;
+            margin-right: 10px;
+          }
+        }
 
         .attach-icon {
           color: $text-primary;
           cursor: pointer;
           margin-right: 10px;
-          position: relative;
-          top: 17px;
-          left: 40px;
           z-index: 1;
           transform: rotate(180deg);
         }
@@ -345,7 +363,7 @@ $border-color: #424242;
 
 
         input {
-          padding-left: 40px;
+          padding-left: 79px;
         }
 
         .input-field {

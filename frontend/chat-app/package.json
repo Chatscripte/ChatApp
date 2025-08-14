@@ -17,6 +17,7 @@
     "@mui/material": "^7.2.0",
     "@neshan-maps-platform/mapbox-gl": "^1.1.5",
     "@neshan-maps-platform/mapbox-gl-react": "^1.0.3",
+    "emoji-picker-react": "^4.13.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.7.0",
