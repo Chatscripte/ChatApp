@@ -69,8 +69,8 @@ function Sidebar({ setAllChats, allChats }: SidebarProps) {
                             {
                                 !isSearchingChats &&
                                 <List className="conversation-list">
-                                    {allChats?.map((conv) => (
-                                        <ChatItem key={conv._id} conv={conv}
+                                    {allChats?.map((conv, index) => (
+                                        <ChatItem key={conv?._id || index} conv={conv}
                                             getChatInfo={getChatInfo} />
                                     ))}
                                 </List>
