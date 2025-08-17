@@ -22,7 +22,6 @@ function ChatApp() {
             refreshAccessToken();
             console.log('access token refreshed');
         }, accessTokenExpiresInSeconds);
-        console.log(accessToken + ' access token changed');
     }, [accessToken]);
 
     // Connect to WebSocket

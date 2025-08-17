@@ -23,7 +23,6 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     // validation 
@@ -35,6 +34,7 @@ const SignIn = () => {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({ identifier, password }),
         });
         if (result.status === 400) {
