@@ -63,17 +63,19 @@ function Sidebar({ setAllChats, allChats }: SidebarProps) {
                                 }
                             </Box>
                             <SearchResults query={searchedValue} />
-                            <Box className="chats-types">
-                                <GroupAddIcon onClick={() => setIsWantCreateGroup(true)} />
-                            </Box>
                             {
                                 !isSearchingChats &&
-                                <List className="conversation-list">
-                                    {allChats?.map((conv, index) => (
-                                        <ChatItem key={conv?._id || index} conv={conv}
-                                            getChatInfo={getChatInfo} />
-                                    ))}
-                                </List>
+                                <>
+                                    <Box className="chats-types">
+                                        <GroupAddIcon onClick={() => setIsWantCreateGroup(true)} />
+                                    </Box>
+                                    <List className="conversation-list">
+                                        {allChats?.map((conv, index) => (
+                                            <ChatItem key={conv?._id || index} conv={conv}
+                                                getChatInfo={getChatInfo} />
+                                        ))}
+                                    </List>
+                                </>
                             }
                         </>
                 }

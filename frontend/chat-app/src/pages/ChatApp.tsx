@@ -20,6 +20,7 @@ function ChatApp() {
     useEffect(() => {
         setTimeout(() => {
             refreshAccessToken();
+            console.log('access token refreshed');
         }, accessTokenExpiresInSeconds);
     }, [accessToken]);
 
