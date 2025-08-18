@@ -2,10 +2,7 @@ const ChatModel = require("./../../models/Chat");
 const MembershipModel = require("./../../models/Membership");
 const messageService = require("./../Message/message.service");
 const crypto = require("crypto");
-const configs = require("./../../configs");
 const { isValidObjectId } = require("mongoose");
-const { title } = require("process");
-const { profile } = require("console");
 
 const isExistingPvChat = async (userA, userB) => {
 	const userAChats = await MembershipModel.find({ user: userA }).distinct(
@@ -29,10 +26,20 @@ const isExistingPvChat = async (userA, userB) => {
 	return false;
 };
 
-const linkGenerator = (title) => {
+const codeGenerator = (title) => {
 	const slug = title.toLowerCase().replace(/\s+/g, "-");
 	const random = crypto.randomBytes(3).toString("hex");
-	return `${configs.domain}/${slug}-${random}`;
+	return `${slug}-${random}`;
+};
+
+exports.createNewMembership = async (chat, user, role) => {
+	const newMembership = await MembershipModel.create({
+		user,
+		chat,
+		role,
+	});
+
+	return newMembership ? newMembership : false;
 };
 
 exports.createPvChat = async (userA, userB) => {
@@ -73,24 +80,24 @@ exports.createPvChat = async (userA, userB) => {
 };
 
 exports.createGroupChat = async (owner, title) => {
-	const inviteLink = linkGenerator(title);
+	const inviteCode = codeGenerator(title);
 
 	const newChat = await ChatModel.create({
 		type: "GROUP",
 		title,
 		owner,
-		inviteLink,
+		inviteCode,
 	});
 
 	if (!newChat) {
 		return { status: false, message: "Something Went Wrong!" };
 	}
 
-	const newMembership = await MembershipModel.create({
-		user: owner,
-		chat: newChat._id,
-		role: "OWNER",
-	});
+	const newMembership = await this.createNewMembership(
+		newChat._id,
+		owner,
+		"OWNER"
+	);
 
 	if (!newMembership) {
 		return { status: false, message: "Something Went Wrong!" };
@@ -110,6 +117,20 @@ exports.findChatById = async (chatID) => {
 	if (!isValidObjectId(chatID)) return false;
 
 	const chat = await ChatModel.findById(chatID);
+
+	return chat ? chat : false;
+};
+
+exports.findChatByCode = async (code) => {
+	const chat = await ChatModel.findOne({ inviteCode: code }).populate({
+		path: "lastMessage",
+		populate: {
+			path: "sender",
+			model: "User",
+			select: "username",
+		},
+		select: "-updatedAt -chat",
+	});
 
 	return chat ? chat : false;
 };
@@ -208,4 +229,10 @@ exports.searchChats = async (keyword) => {
 	]);
 
 	return results;
+};
+
+exports.findMembership = async (chat, user) => {
+	const membership = await MembershipModel.findOne({ chat, user });
+
+	return membership ? membership : false;
 };

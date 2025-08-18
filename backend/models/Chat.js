@@ -21,7 +21,7 @@ const chatShema = new mongoose.Schema(
 			require: false,
 			default: undefined,
 		},
-		inviteLink: {
+		inviteCode: {
 			type: String,
 			required: false,
 			unique: true,

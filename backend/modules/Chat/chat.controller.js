@@ -2,7 +2,7 @@ const validatorErrorHandler = require("../../sockets/helpers/socketValidatorErro
 const chatService = require("./chat.service");
 const authService = require("./../Auth/auth.service");
 const { pvChatValidator, groupChatValidator } = require("./chat.validator");
-const { successResponse } = require("../../helpers/responses");
+const { successResponse, errorResponse } = require("../../helpers/responses");
 
 exports.findChats = async (req, res, next) => {
 	try {
@@ -120,4 +120,46 @@ exports.createNewChat = async (socket, data) => {
 	}
 
 	return { success: false, message: "Invalid Chat type" };
+};
+
+exports.joinToChat = async (req, res, next) => {
+	try {
+		const code = req.params.code.trim();
+		const userID = req.user._id;
+
+		//* Chat
+		const chat = await chatService.findChatByCode(code);
+
+		if (!chat) {
+			return errorResponse(res, 404, "Not Found");
+		}
+
+		// * Membership checking
+		const isExistMembership = await chatService.findMembership(
+			chat._id,
+			userID
+		);
+
+		if (isExistMembership) {
+			return errorResponse(res, 400, "User already joined");
+		}
+
+		// * Joining
+		const newMembership = await chatService.createNewMembership(
+			chat._id,
+			userID,
+			"MEMBER"
+		);
+
+		if (!newMembership) {
+			return errorResponse(res, 500, "Something Went Wrong");
+		}
+
+		return successResponse(res, 201, {
+			message: "Joined successfully",
+			chat,
+		});
+	} catch (err) {
+		next(err);
+	}
 };
