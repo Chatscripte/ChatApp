@@ -38,8 +38,8 @@ interface chatInfo {
     }>
 }
 export interface ChatContextType {
-    chatInfo: chatInfo | null;
-    setChatInfo: React.Dispatch<React.SetStateAction<chatInfo | null>>;
+    chatInfo: { [chatId: string]: chatInfo | null };
+    setChatInfo: React.Dispatch<React.SetStateAction<{ [chatId: string]: chatInfo | null }>>;
     isCreatedGroup: boolean;
     setIsCreatedGroup: React.Dispatch<React.SetStateAction<boolean>>;
     isSearchingChats: boolean;
@@ -48,19 +48,29 @@ export interface ChatContextType {
     setIsChatOpend: React.Dispatch<React.SetStateAction<boolean>>;
     currentChat: { _id: string; title: string; profile: string } | null;
     setCurrentChat: React.Dispatch<React.SetStateAction<{ _id: string; title: string; profile: string } | null>>;
+    allChats: Array<{ _id: string; title: string; profile: string; type?: string }>;
+    setAllChats: React.Dispatch<React.SetStateAction<Array<{ _id: string; title: string; profile: string; type?: string }>>>;
+    isCreatedPv: boolean;
+    setIsCreatedPv: React.Dispatch<React.SetStateAction<boolean>>;
+    currentChatInfos: chatInfo | null;
+    setCurrentChatInfos: React.Dispatch<React.SetStateAction<chatInfo | null>>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [chatInfo, setChatInfo] = useState<chatInfo | null>(null);
+    const [chatInfo, setChatInfo] = useState<{ [chatId: string]: chatInfo | null }>({});
     const [isCreatedGroup, setIsCreatedGroup] = useState<boolean>(false);
     const [isSearchingChats, setIsSearchingChats] = useState<boolean>(false);
     const [isChatOpend, setIsChatOpend] = useState<boolean>(false);
+    const [isCreatedPv, setIsCreatedPv] = useState<boolean>(false);
+    const [allChats, setAllChats] = useState<Array<{ _id: string; title: string; profile: string; type?: string }>>([]);
     const [currentChat, setCurrentChat] = useState<{ _id: string; title: string; profile: string } | null>(null);
+    const [currentChatInfos, setCurrentChatInfos] = useState<chatInfo | null>(null);
+
     return (
-        <ChatContext.Provider value={{ isChatOpend, setIsChatOpend, currentChat, setCurrentChat, chatInfo, setChatInfo, isCreatedGroup, setIsCreatedGroup, isSearchingChats, setIsSearchingChats }}>
+        <ChatContext.Provider value={{ isCreatedPv, setIsCreatedPv, allChats, setAllChats, isChatOpend, setIsChatOpend, currentChat, setCurrentChat, chatInfo, setChatInfo, isCreatedGroup, setIsCreatedGroup, isSearchingChats, setIsSearchingChats, currentChatInfos, setCurrentChatInfos }}>
             {children}
         </ChatContext.Provider>
     );

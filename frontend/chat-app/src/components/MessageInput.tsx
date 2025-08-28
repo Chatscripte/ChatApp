@@ -12,7 +12,7 @@ import EmojiPickerComponent from './EmojiPicker';
 
 function MessageInput({ currentChat, setMessages, messages, messagesEndRef }: { currentChat: { _id: string } | null, setMessages: React.Dispatch<React.SetStateAction<Message[]>>, messages: Message[], messagesEndRef: React.RefObject<HTMLDivElement | null> }) {
     const [message, setMessage] = useState('');
-    const { chatInfo } = useChatContext();
+    const {  currentChatInfos } = useChatContext();
     const attachIcon = useRef<SVGSVGElement | null>(null);
     const [isSendFileTypeVisible, setIsSendFileTypeVisible] = useState(false);
     const [isShowEmojiPicker, setIsShowEmojiPicker] = useState(false);
@@ -22,8 +22,10 @@ function MessageInput({ currentChat, setMessages, messages, messagesEndRef }: { 
     useEffect(() => {
         if (!currentChat?._id) return;
 
-        // Initialize messages with chatInfo.messages
-        setMessages(chatInfo?.messages || []);
+        if (currentChatInfos?.messages) {
+            // Initialize messages with currentChatInfos?.messages
+            setMessages(currentChatInfos?.messages || []);
+        }
 
         const handleMessage = (data: { data: { message: Message } }) => {
             if (data?.data?.message) {
@@ -43,12 +45,12 @@ function MessageInput({ currentChat, setMessages, messages, messagesEndRef }: { 
         return () => {
             socket.off(SOCKET_EVENTS.CHAT_GET_MESSAGES, handleMessage);
         };
-    }, [currentChat?._id, chatInfo?.messages]);
+    }, [currentChat?._id]);
 
     // Auto-scroll to the latest message
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+    }, [messages, messagesEndRef]);
 
     // Memoize sendMessage to prevent unnecessary rerenders
     const sendMessage = useCallback(() => {

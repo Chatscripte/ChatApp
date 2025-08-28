@@ -438,6 +438,7 @@ $border-color: #424242;
   align-items: center;
   padding-inline: 29px;
   color: $text-primary;
+  justify-content: space-between;
 
   svg {
     cursor: pointer;

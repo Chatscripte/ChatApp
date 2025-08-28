@@ -6,7 +6,7 @@ import '../styles/MessageArea.scss';
 import { useShowPopups } from '../hooks/useShowPopups';
 import SelectLocationPopup from '../popups/SelectLocationPopup';
 import { useCallback, useEffect, useState } from 'react';
-import {  getMapUrls, isMobile } from '../lib/helper';
+import { getMapUrls, isMobile } from '../lib/helper';
 
 interface ChatTemplateProps {
     messages: Message[];

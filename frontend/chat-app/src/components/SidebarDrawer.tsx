@@ -1,7 +1,15 @@
 import { Box, Drawer, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { useChatContext } from '../hooks/useChatContext'
+
+interface SidebarDrawerProps {
+    isDrawerOpen: boolean;
+    setIsDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    toggleDrawer: () => void;
+}
 
 
-function SidebarDrawer({ isDrawerOpen, setIsDrawerOpen, allChats, toggleDrawer }: any) {
+function SidebarDrawer({ isDrawerOpen, setIsDrawerOpen, toggleDrawer }: SidebarDrawerProps) {
+    const { allChats } = useChatContext();
     return (
         <Drawer anchor="left" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} className="mobile-sidebar">
             <Box className="sidebar-paper">

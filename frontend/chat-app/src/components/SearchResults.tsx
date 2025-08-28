@@ -25,18 +25,26 @@ function SearchResults({ query }: SearchResultsProps) {
         if (!query) return;
         setIsSearchingChats(true);
         setLoading(true);
-        postData(`${import.meta.env.VITE_BACKEND_URL_DEVELOPMENT}/api/chat/search`, { keyword: query })
-            .then(result => {
-                setResults(result.data)
-            })
-            .catch(err => {
-                setError(err)
-            })
-            .finally(() => {
+        const timeout = setTimeout(() => {
+            postData(`${import.meta.env.VITE_BACKEND_URL_DEVELOPMENT}/api/chat/search`, { keyword: query })
+                .then(result => {
+                    setResults(result.data)
+                })
+                .catch(err => {
+                    setError(err)
+                })
+                .finally(() => {
+                    setLoading(false)
+                });
+        }, 5000);
+        // If no results after 5 seconds, stop loading
+        if (results.length === 0 && !loading) {
+            if (results.length === 0) {
                 setLoading(false)
-            });
-        if (results.length === 0) {
-            setLoading(false)
+            }
+        }
+        return () => {
+            clearTimeout(timeout);
         }
     }, [query]);
 
@@ -64,7 +72,7 @@ function SearchResults({ query }: SearchResultsProps) {
                 />
             ))}
             {results.length === 0 && (
-                <h2 style={{ color: 'white' , textAlign : 'center' }}>هیچ نتیجه ای یافت نشد</h2>
+                <h2 style={{ color: 'white', textAlign: 'center' }}>هیچ نتیجه ای یافت نشد</h2>
             )}
         </ul>
     );

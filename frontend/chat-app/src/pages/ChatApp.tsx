@@ -9,10 +9,8 @@ import Sidebar from '../components/Sidebar';
 import ChatTemplate from '../components/ChatTemplate';
 import SidebarDrawer from '../components/SidebarDrawer';
 
-
 function ChatApp() {
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
-    const [allChats, setAllChats] = useState<{ _id: string, title: string, profile?: string }[]>([]);
     const { accessToken, setAccessToken } = useAuth();
     const accessTokenExpiresInSeconds = import.meta.env.VITE_ACCESS_TOKEN_EXPIRES_IN_SECONDS;
 
@@ -56,12 +54,11 @@ function ChatApp() {
             <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} closeOnClick draggable pauseOnHover />
             <Grid container className="chat-container">
                 {/* Sidebar: Conversation List (Desktop) */}
-                <Sidebar setAllChats={setAllChats} allChats={allChats} />
+                <Sidebar  />
                 {/* Mobile Sidebar (Drawer) */}
                 <SidebarDrawer
                     isDrawerOpen={isDrawerOpen}
                     setIsDrawerOpen={setIsDrawerOpen}
-                    allChats={allChats}
                     toggleDrawer={() => setIsDrawerOpen(!isDrawerOpen)}
                 />
                 {/* Main Chat Area */}

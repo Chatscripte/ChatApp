@@ -1,5 +1,5 @@
-import { Box, Grid, List, Paper } from '@mui/material';
-import { useDeferredValue, useEffect, useState } from 'react'
+import { Box, Grid, List, Paper, Typography } from '@mui/material';
+import { useCallback, useDeferredValue, useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import SearchResults from './SearchResults';
 import AddGroup from './AddGroup';
@@ -9,79 +9,131 @@ import { useChatContext } from '../hooks/useChatContext';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import ChatItem from './ChatItem';
 import CloseIcon from '@mui/icons-material/Close';
+import PeopleIcon from '@mui/icons-material/People';
+import SearchModal from '../Modals/SearchModal';
 
-interface SidebarProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setAllChats: React.Dispatch<React.SetStateAction<any>>;
-    allChats: { _id: string, title: string, profile?: string }[];
-}
+function Sidebar() {
+    const [isWantCreateGroup, setIsWantCreateGroup] = useState(false);
+    const {
+        setChatInfo,
+        isCreatedGroup,
+        isSearchingChats,
+        setIsSearchingChats,
+        allChats,
+        setAllChats,
+        isCreatedPv,
+    } = useChatContext();
 
-function Sidebar({ setAllChats, allChats }: SidebarProps) {
-    const [isWantCreateGroup, setIsWantCreateGroup] = useState<boolean>(false);
-    const { setChatInfo, isCreatedGroup, isSearchingChats, setIsSearchingChats } = useChatContext();
-    const [query, setQuery] = useState<string>('');
+    const [query, setQuery] = useState('');
     const searchedValue = useDeferredValue(query);
+    const [isShowSearchingUser, setIsShowSearchingUser] = useState(false);
 
+    /** ✅ define getChatInfo once, memoized */
+    const getChatInfo = useCallback(
+        (chatID: string) => {
+            socket.emit(SOCKET_EVENTS.CHAT_GET_ONE, { chatID }, (data: any) => {
+                if (data.success) {
+                    setChatInfo((prev) => ({ ...prev, [chatID]: data.chat }));
+                }
+            });
+        },
+        [setChatInfo]
+    );
+
+    /** ✅ fetch all chats whenever new group/pv is created */
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         socket.emit(SOCKET_EVENTS.CHAT_GET_ALL, (data: any) => {
-            setAllChats(data.chats);
+            if (data?.chats) {
+                setAllChats(data.chats);
+            }
         });
         return () => {
             socket.off(SOCKET_EVENTS.CHAT_GET_ALL);
-        }
-    }, [isCreatedGroup])
+        };
+    }, [isCreatedGroup, isCreatedPv, setAllChats]);
 
-    // Function to get chat information
-    const getChatInfo = (chatID: string) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        socket.emit(SOCKET_EVENTS.CHAT_GET_ONE, { chatID }, (data: any) => {
-            if (data.success) {
-                setChatInfo(data.chat);
-            }
+    /** ✅ pre-fetch chat info for PV chats */
+    useEffect(() => {
+        allChats?.forEach((conv) => {
+                getChatInfo(conv._id);
         });
-    }
+    }, [allChats, getChatInfo,setAllChats]);
 
     return (
         <Grid item xs={12} className="sidebar desktop-sidebar">
             <Paper elevation={3} className="sidebar-paper">
-                {
-                    isWantCreateGroup ?
-                        // If user wants to create a group, show the AddGroup component
-                        <AddGroup setIsWantCreateGroup={setIsWantCreateGroup} />
-                        :
-                        <>
-                            <Box className="search-bar-container">
-                                <SearchIcon className='search-icon' />
-                                <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} className='search-bar' placeholder='Search...' />
-                                {
-                                    isSearchingChats &&
-                                    <CloseIcon onClick={() => {
-                                        setQuery('')
-                                        setIsSearchingChats(false)
-                                    }} className='close-icon' />
-                                }
-                            </Box>
-                            <SearchResults query={searchedValue} />
-                            {
-                                !isSearchingChats &&
-                                <>
-                                    <Box className="chats-types">
-                                        <GroupAddIcon onClick={() => setIsWantCreateGroup(true)} />
-                                    </Box>
-                                    <List className="conversation-list">
-                                        {allChats?.map((conv, index) => (
-                                            <ChatItem key={conv?._id || index} conv={conv}
-                                                getChatInfo={getChatInfo} />
-                                        ))}
-                                    </List>
-                                </>
-                            }
-                        </>
-                }
+                {isWantCreateGroup ? (
+                    <AddGroup setIsWantCreateGroup={setIsWantCreateGroup} />
+                ) : (
+                    <>
+                        {/* 🔍 Search bar */}
+                        <Box className="search-bar-container">
+                            <SearchIcon className="search-icon" />
+                            <input
+                                type="text"
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                className="search-bar"
+                                placeholder="Search Chats..."
+                            />
+                            {isSearchingChats && (
+                                <CloseIcon
+                                    onClick={() => {
+                                        setQuery('');
+                                        setIsSearchingChats(false);
+                                    }}
+                                    className="close-icon"
+                                />
+                            )}
+                        </Box>
+
+                        {/* Search Results */}
+                        <SearchResults query={searchedValue} />
+
+                        {/* Chats list */}
+                        {!isSearchingChats && (
+                            <>
+                                <Box className="chats-types">
+                                    <GroupAddIcon
+                                        onClick={() => setIsWantCreateGroup(true)}
+                                        style={{ cursor: 'pointer' }}
+                                    />
+                                    <div
+                                        onClick={() => setIsShowSearchingUser(true)}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            cursor: 'pointer',
+                                        }}
+                                    >
+                                        <PeopleIcon />
+                                        <Typography>Search Users</Typography>
+                                    </div>
+                                </Box>
+                                <List className="conversation-list">
+                                    {allChats?.map((conv) => (
+                                        <ChatItem
+                                            key={conv._id}
+                                            conv={conv}
+                                            getChatInfo={getChatInfo}
+                                        />
+                                    ))}
+                                </List>
+                            </>
+                        )}
+                    </>
+                )}
+                {/* Modal */}
+                {isShowSearchingUser && (
+                    <SearchModal
+                        open={isShowSearchingUser}
+                        handleClose={() => setIsShowSearchingUser(false)}
+                    />
+                )}
             </Paper>
         </Grid>
-    )
+    );
 }
 
-export default Sidebar
+export default Sidebar;
