@@ -1,3 +1,4 @@
+const { roomOnlineUsersCount } = require("../../sockets/funcs/onlineUsers");
 const { createNewChat, getAll, getOne } = require("./chat.controller");
 
 exports.registerChatHandler = (io, socket) => {
@@ -29,8 +30,9 @@ exports.registerChatHandler = (io, socket) => {
 		try {
 			const chats = await getAll(socket);
 
-			chats.forEach((chat) => {
+			chats.forEach(async (chat) => {
 				socket.join(chat._id.toString());
+				roomOnlineUsersCount(io, chat._id.toString());
 			});
 
 			return cb({ success: true, chats });

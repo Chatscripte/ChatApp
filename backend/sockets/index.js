@@ -4,6 +4,7 @@ const { registerChatHandler } = require("./../modules/Chat/chat.socket");
 const {
 	registerMessageHandler,
 } = require("./../modules/Message/message.socket");
+const { roomOnlineUsersCount } = require("./funcs/onlineUsers");
 
 module.exports = (server) => {
 	const io = new Server(server, {
@@ -23,6 +24,17 @@ module.exports = (server) => {
 		registerChatHandler(io, socket);
 
 		registerMessageHandler(io, socket);
+
+		socket.on("disconnect", async () => {
+			const rooms = Array.from(socket.rooms).filter(
+				(r) => r !== socket.id
+			);
+
+			rooms.forEach((roomId) => {
+				socket.leave(roomId);
+				roomOnlineUsersCount(io, roomId);
+			});
+		});
 	});
 
 	return io;
