@@ -79,3 +79,39 @@ exports.createNewMessage = async (socket, data) => {
 		data: { message: newMessage, chat: updatedChat },
 	};
 };
+
+exports.seenMessage = async (socket, data) => {
+	const userID = socket.user._id;
+	const { messageID } = data;
+
+	//* Chat ID Validation
+	const message = await messageService.findMessageByID(messageID);
+	if (!message) {
+		return {
+			success: false,
+			message: "Message not found",
+		};
+	}
+
+	//* Update Document
+
+	const updatedMessage = await messageService.seenByNewUser(
+		message.chat,
+		userID,
+		messageID
+	);
+
+	if (updatedMessage.status === false) {
+		return {
+			success: false,
+			errMsg: updatedMessage.err,
+		};
+	}
+
+	return {
+		success: true,
+		chat: message.chat,
+		message: updatedMessage,
+		seenBy: userID,
+	};
+};

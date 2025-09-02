@@ -1,4 +1,5 @@
 const MessageModel = require("./../../models/Message");
+const MembershipModel = require("./../../models/Membership");
 
 exports.createMessage = async (messageData) => {
 	const newMessage = await (
@@ -23,4 +24,38 @@ exports.findChatMessages = async (chatID) => {
 		.lean();
 
 	return messaegs;
+};
+
+exports.findMessageByID = async (messageID) => {
+	if (!isValidObjectId(messageID)) return false;
+
+	const message = await MessageModel.findById(messageID);
+
+	return message ? message : false;
+};
+
+exports.seenByNewUser = async (chatID, userID, messageID) => {
+	const message = await MessageModel.findByIdAndUpdate(
+		messageID,
+		{
+			$addToSet: {
+				seenBy: userID,
+			},
+		},
+		{ new: true }
+	);
+
+	const membership = await MembershipModel.findOneAndUpdate(
+		{
+			chat: chatID,
+			user: userID,
+		},
+		{ lastSeenMessage: messageID }
+	);
+
+	if (!message || !membership) {
+		return { status: false, err: "Something Went Wrong!" };
+	}
+
+	return message;
 };

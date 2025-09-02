@@ -16,6 +16,11 @@ const membershipSchema = new mongoose.Schema(
 			type: String,
 			enum: ["OWNER", "MEMBER"],
 		},
+		lastSeenMessage: {
+			type: mongoose.Types.ObjectId,
+			ref: "Message",
+			required: false,
+		},
 	},
 	{ timestamps: true, versionKey: false }
 );

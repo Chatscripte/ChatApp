@@ -35,6 +35,12 @@ const messageSchema = new mongoose.Schema(
 			type: locationSchema,
 			required: false,
 		},
+		seenBy: [
+			{
+				type: mongoose.Types.ObjectId,
+				ref: "User",
+			},
+		],
 	},
 	{ timestamps: true, versionKey: false }
 );
