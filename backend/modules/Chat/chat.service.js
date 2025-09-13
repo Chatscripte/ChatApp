@@ -236,3 +236,4 @@ exports.findMembership = async (chat, user) => {
 
 	return membership ? membership : false;
 };
+
