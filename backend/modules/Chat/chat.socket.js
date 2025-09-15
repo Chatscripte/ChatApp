@@ -41,5 +41,20 @@ exports.registerChatHandler = (io, socket) => {
 		}
 	});
 
-	
+	socket.on("chat:get:one", async (data, cb) => {
+		try {
+			const result = await getOne(data);
+
+			if (result.success === false) {
+				return cb({
+					success: false,
+					message: result.message,
+				});
+			}
+
+			return cb(result);
+		} catch (err) {
+			return cb({ success: false, message: err.message });
+		}
+	});
 };
