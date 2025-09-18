@@ -8,6 +8,8 @@ import MessagesArea from './MessagesArea';
 import type { ChatTemplateProps, Message } from '../types';
 import ChatHeader from './ChatHeader';
 import { useChatContext } from '../hooks/useChatContext';
+import socket from '../lib/socket';
+import { SOCKET_EVENTS } from '../enums';
 
 
 function ChatTemplate({ setIsDrawerOpen, isDrawerOpen }: ChatTemplateProps) {
@@ -15,8 +17,9 @@ function ChatTemplate({ setIsDrawerOpen, isDrawerOpen }: ChatTemplateProps) {
     const accessToken = getCookie('accessToken');
     const [messages, setMessages] = useState<Message[]>([]); // Combine chatInfo.messages and newMessages
     const messagesEndRef = useRef<HTMLDivElement | null>(null); // For auto-scrolling to latest message
-    const { currentChat, isChatOpend } = useChatContext();
-    // Parse access token only once on mount or when accessToken changes
+    const { currentChat, isChatOpend , currentChatInfos } = useChatContext();
+
+
     useEffect(() => {
         if (accessToken) {
             const parsedToken = parseToken(accessToken);
@@ -27,6 +30,20 @@ function ChatTemplate({ setIsDrawerOpen, isDrawerOpen }: ChatTemplateProps) {
     const toggleDrawer = () => {
         setIsDrawerOpen(!isDrawerOpen);
     };
+
+    useEffect(() => {
+        if(isChatOpend) {
+            socket.on(SOCKET_EVENTS.CHAT_GET_ONLINE_USERS, (onlineUsers) => {
+                console.log('Online users:', onlineUsers);
+            });
+            currentChatInfos?.messages?.map(msg => {
+               return  socket.emit(SOCKET_EVENTS.MESSAGE_SEEN, {messageID: msg._id} ,(data) => {
+                console.log(data)
+                 return data
+                })
+            })
+        }
+    }, [isChatOpend , currentChat]);
 
     return (
         <Grid item xs={12} className="chat-area">

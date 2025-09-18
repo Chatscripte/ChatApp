@@ -14,7 +14,7 @@ import useLocation from '../hooks/useLocation';
 function SelectLocationPopup() {
     const { isShowLocationPopup, setIsShowLocationPopup } = useShowPopups();
     const [showMap, setShowMap] = useState(false);
-    const { chatInfo } = useChatContext();
+    const {  currentChat ,currentChatInfos } = useChatContext();
     const {coordinates} = useLocation();
     const handleClose = () => {
         setIsShowLocationPopup(false);
@@ -22,8 +22,9 @@ function SelectLocationPopup() {
 
     const sendLocation = () => {
         console.log(coordinates);
+        console.log(currentChat);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        socket.emit(SOCKET_EVENTS.CHAT_SEND_MESSAGE, { chatID: chatInfo?.chatInfo._id, location: coordinates }, (response: any) => {
+        socket.emit(SOCKET_EVENTS.CHAT_SEND_MESSAGE, { chatID: currentChatInfos?.chatInfo?._id, location: coordinates }, (response: any) => {
             console.log('File sent successfully:', response);
             setIsShowLocationPopup(false);
         });

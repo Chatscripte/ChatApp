@@ -12,10 +12,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import PeopleIcon from '@mui/icons-material/People';
 import SearchModal from '../Modals/SearchModal';
 
+
 function Sidebar() {
     const [isWantCreateGroup, setIsWantCreateGroup] = useState(false);
     const {
         setChatInfo,
+        chatInfo,
         isCreatedGroup,
         isSearchingChats,
         setIsSearchingChats,
