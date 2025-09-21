@@ -19,11 +19,11 @@ const isExistingPvChat = async (userA, userB) => {
 		type: "PV",
 	});
 
-	if (existingPvChat) {
-		return true;
+	if (!existingPvChat) {
+		return false;
 	}
 
-	return false;
+	return existingPvChat;
 };
 
 const codeGenerator = (title) => {
@@ -43,8 +43,13 @@ exports.createNewMembership = async (chat, user, role) => {
 };
 
 exports.createPvChat = async (userA, userB) => {
-	if (await isExistingPvChat(userA, userB)) {
-		return { status: false, message: "This chat already exists!" };
+	const existingPvChat = await isExistingPvChat(userA, userB);
+	if (existingPvChat) {
+		return {
+			status: false,
+			message: "This chat already exists!",
+			data: existingPvChat,
+		};
 	}
 
 	const newChat = await ChatModel.create({ type: "PV" });
@@ -236,4 +241,3 @@ exports.findMembership = async (chat, user) => {
 
 	return membership ? membership : false;
 };
-

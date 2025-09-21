@@ -70,6 +70,7 @@ const createPv = async (ownerID, recipientUsername) => {
 		return {
 			success: false,
 			message: newChatData.message,
+			data: newChatData.data,
 		};
 	}
 
