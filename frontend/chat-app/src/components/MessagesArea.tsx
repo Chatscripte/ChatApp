@@ -190,8 +190,8 @@ function MessagesArea({ messages, messagesEndRef, currentUser }: ChatTemplatePro
                         </Paper>
                     </Box>
                 ))}
-                <div ref={messagesEndRef} />
             </Box>
+            <div ref={messagesEndRef} />
         </>
     );
 }

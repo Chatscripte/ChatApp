@@ -5,17 +5,11 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import VerticalSplitIcon from '@mui/icons-material/VerticalSplit';
 import type { ChatHeaderProps } from '../types';
 import { useChatContext } from '../hooks/useChatContext';
-import { useEffect } from 'react';
 
 
 
 function ChatHeader({ currentChat, toggleDrawer }: ChatHeaderProps) {
-    const { currentChatInfos } = useChatContext()
-
-    useEffect(() => {
-        console.log(currentChatInfos);
-    }, [currentChatInfos])
-   
+    const { currentChatInfos } = useChatContext();
 
     return (
         <Box className="chat-header">

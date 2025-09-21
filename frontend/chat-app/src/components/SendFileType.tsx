@@ -19,7 +19,7 @@ function SendFileType({ setIsSendFileTypeVisible, setFile }: SendFileTypeProps) 
     const photoVideoInputRef = useRef<HTMLInputElement | null>(null);
     const documentInputRef = useRef<HTMLInputElement | null>(null);
     const locationInputRef = useRef<HTMLInputElement | null>(null);
-    const { chatInfo } = useChatContext();
+    const { chatInfo , currentChatInfos } = useChatContext();
     const { setIsShowLocationPopup } = useShowPopups();
 
     // Trigger file input click
@@ -42,7 +42,7 @@ function SendFileType({ setIsSendFileTypeVisible, setFile }: SendFileTypeProps) 
                 const data = await res.json();
                 const { fileUrl } = data.data
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                socket.emit(SOCKET_EVENTS.CHAT_SEND_MESSAGE, { chatID: chatInfo?.chatInfo._id, fileUrl }, (response: any) => {
+                socket.emit(SOCKET_EVENTS.CHAT_SEND_MESSAGE, { chatID: currentChatInfos?.chatInfo?._id, fileUrl }, (response: any) => {
                     console.log('File sent successfully:', response);
                     setFile(null);
                 });
