@@ -29,6 +29,7 @@ function Sidebar() {
     const [query, setQuery] = useState('');
     const searchedValue = useDeferredValue(query);
     const [isShowSearchingUser, setIsShowSearchingUser] = useState(false);
+    const [recieverUsername , setRecieverUsername] = useState<{[id: 'string'] : string}>({});
 
     /** ✅ define getChatInfo once, memoized */
     const getChatInfo = useCallback(
@@ -41,6 +42,18 @@ function Sidebar() {
         },
         [setChatInfo]
     );
+
+    const getCurrentUsername = (chatId) => {
+        const currentChatUsername = chatInfo[chatId]?.members[1]?.user?.username
+        setRecieverUsername((prev) => ({
+            ...prev,
+            [chatId] : currentChatUsername
+        }))
+    }
+
+    useEffect(() => {
+        allChats?.map(chat => getCurrentUsername(chat._id))
+    },[chatInfo])
 
     /** ✅ fetch all chats whenever new group/pv is created */
     useEffect(() => {
@@ -119,6 +132,7 @@ function Sidebar() {
                                             key={conv._id}
                                             conv={conv}
                                             getChatInfo={getChatInfo}
+                                            username={recieverUsername[conv._id]}
                                         />
                                     ))}
                                 </List>

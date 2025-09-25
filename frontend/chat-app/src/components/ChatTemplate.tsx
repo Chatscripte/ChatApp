@@ -19,7 +19,6 @@ function ChatTemplate({ setIsDrawerOpen, isDrawerOpen }: ChatTemplateProps) {
     const messagesEndRef = useRef<HTMLDivElement | null>(null); // For auto-scrolling to latest message
     const { currentChat, isChatOpend , currentChatInfos } = useChatContext();
 
-
     useEffect(() => {
         if (accessToken) {
             const parsedToken = parseToken(accessToken);
@@ -42,6 +41,15 @@ function ChatTemplate({ setIsDrawerOpen, isDrawerOpen }: ChatTemplateProps) {
                  return data
                 })
             })
+            currentChatInfos?.messages?.map(msg => {
+                return socket.on(SOCKET_EVENTS.MESSAGE_SEEN , (data) => {
+                    console.log(data)
+                })
+            })
+        }
+        return () => {
+            socket.off(SOCKET_EVENTS.CHAT_GET_ONLINE_USERS)
+            socket.off(SOCKET_EVENTS.MESSAGE_SEEN)
         }
     }, [isChatOpend , currentChat]);
 

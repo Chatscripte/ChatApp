@@ -1,3 +1,5 @@
+import socket, {updateSocketAuth} from "./socket";
+import {SOCKET_EVENTS} from "../enums";
 
 const setCookie = (name: string, value: string, days: number) => {
   const expires = new Date(Date.now() + days * 864e5);
@@ -63,13 +65,28 @@ async function refreshAccessToken() {
     const data = await response.json();
     const newAccessToken = data.data?.accessToken;
     const expiresInSeconds = import.meta.env.VITE_ACCESS_TOKEN_EXPIRES_IN_SECONDS;
+    console.log(expiresInSeconds)
     // Update the cookie with the new access token
     setCookie('accessToken', newAccessToken, expiresInSeconds);
+    console.log(newAccessToken)
+    updateSocketAuth(newAccessToken)
     return newAccessToken;
   } catch (error) {
     console.error('Error refreshing access token:', error);
   }
 }
 
+function getChatInformation(chatID: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    socket.emit(SOCKET_EVENTS.CHAT_GET_ONE, { chatID }, (data: any) => {
+      if (data?.chat) {
+        resolve(data.chat);
+      } else {
+        reject(new Error("No chat data received"));
+      }
+    });
+  });
+}
 
-export { setCookie, getCookie, deleteCookie, parseToken, getMapUrls, isMobile, refreshAccessToken };
+
+export { setCookie, getCookie, deleteCookie, parseToken, getMapUrls, isMobile, refreshAccessToken , getChatInformation };

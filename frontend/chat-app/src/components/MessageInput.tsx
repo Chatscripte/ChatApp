@@ -1,36 +1,59 @@
-import { Box, TextField } from '@mui/material';
-import { useCallback, useEffect, useRef, useState } from 'react'
-import SendFileType from './SendFileType';
-import { SOCKET_EVENTS } from '../enums';
-import socket from '../lib/socket';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import { useChatContext } from '../hooks/useChatContext';
-import SendIcon from '@mui/icons-material/Send';
-import type { Message } from '../types';
-import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
-import EmojiPickerComponent from './EmojiPicker';
+import { Box, TextField } from "@mui/material";
+import { useCallback, useEffect, useRef, useState } from "react";
+import SendFileType from "./SendFileType";
+import { SOCKET_EVENTS } from "../enums";
+import socket from "../lib/socket";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import { useChatContext } from "../hooks/useChatContext";
+import SendIcon from "@mui/icons-material/Send";
+import type { Message } from "../types";
+import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
+import EmojiPickerComponent from "./EmojiPicker";
+import { getChatInformation } from "../lib/helper";
 
-function MessageInput({ currentChat, setMessages, messages, messagesEndRef }: { currentChat: { _id: string } | null, setMessages: React.Dispatch<React.SetStateAction<Message[]>>, messages: Message[], messagesEndRef: React.RefObject<HTMLDivElement | null> }) {
-    const [message, setMessage] = useState('');
-    const {  currentChatInfos } = useChatContext();
+function MessageInput({
+                          currentChat,
+                          setMessages,
+                          messages,
+                          messagesEndRef,
+                      }: {
+    currentChat: { _id: string } | null;
+    setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+    messages: Message[];
+    messagesEndRef: React.RefObject<HTMLDivElement | null>;
+}) {
+    const [message, setMessage] = useState("");
+    const { setCurrentChatInfos , setLastMessage } = useChatContext();
     const attachIcon = useRef<SVGSVGElement | null>(null);
     const [isSendFileTypeVisible, setIsSendFileTypeVisible] = useState(false);
     const [isShowEmojiPicker, setIsShowEmojiPicker] = useState(false);
     const [file, setFile] = useState<File | null>(null);
-
-    // Set up socket listener for incoming messages
+    console.log(messages)
+    // Load messages fresh when chat changes
     useEffect(() => {
-        if (!currentChat?._id) return;
-
-        if (currentChatInfos?.messages) {
-            // Initialize messages with currentChatInfos?.messages
-            setMessages(currentChatInfos?.messages || []);
+        if (!currentChat?._id) {
+            setMessages([]);
+            return;
         }
 
+        // clear old messages immediately
+        setMessages([]);
+
+        const fetchMessages = async () => {
+            const updatedChat = await getChatInformation(currentChat._id);
+            setMessages(updatedChat?.messages || []);
+            setLastMessage(updatedChat.messages[updatedChat.messages.length - 1])
+            setCurrentChatInfos(updatedChat);
+        };
+
+        fetchMessages();
+    }, [currentChat?._id, setMessages, setCurrentChatInfos]);
+
+    // Socket listener for real-time incoming messages
+    useEffect(() => {
         const handleMessage = (data: { data: { message: Message } }) => {
             if (data?.data?.message) {
                 setMessages((prevMessages) => {
-                    // Avoid duplicates by checking _id
                     if (prevMessages.some((msg) => msg._id === data.data.message._id)) {
                         return prevMessages;
                     }
@@ -41,18 +64,17 @@ function MessageInput({ currentChat, setMessages, messages, messagesEndRef }: { 
 
         socket.on(SOCKET_EVENTS.CHAT_GET_MESSAGES, handleMessage);
 
-        // Clean up listener on unmount or when currentChat changes
         return () => {
             socket.off(SOCKET_EVENTS.CHAT_GET_MESSAGES, handleMessage);
         };
-    }, [currentChat?._id]);
+    }, [setMessages]);
 
-    // Auto-scroll to the latest message
+    // Auto-scroll
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages, messagesEndRef]);
 
-    // Memoize sendMessage to prevent unnecessary rerenders
+    // Send message
     const sendMessage = useCallback(() => {
         if (!message || !currentChat?._id) return;
 
@@ -62,9 +84,8 @@ function MessageInput({ currentChat, setMessages, messages, messagesEndRef }: { 
                 chatID: currentChat._id,
                 text: message,
             },
-            (data: unknown) => {
-                console.log('Message sent:', data);
-                setMessage('');
+            async () => {
+                setMessage("");
             }
         );
     }, [message, currentChat?._id]);
@@ -74,22 +95,30 @@ function MessageInput({ currentChat, setMessages, messages, messagesEndRef }: { 
     }, []);
 
     const handleShowEmoji = () => {
-        setIsShowEmojiPicker(!isShowEmojiPicker);
-    }
+        setIsShowEmojiPicker((prev) => !prev);
+    };
+
     return (
         <>
-            <div className='emoji'>
-                {isShowEmojiPicker && <EmojiPickerComponent
-                    setMessage={setMessage}
-                    setIsShowEmojiPicker={setIsShowEmojiPicker} />}
+            <div className="emoji">
+                {isShowEmojiPicker && (
+                    <EmojiPickerComponent
+                        setMessage={setMessage}
+                        setIsShowEmojiPicker={setIsShowEmojiPicker}
+                    />
+                )}
             </div>
             <Box className="message-input">
-                <div className='input-icons'>
+                <div className="input-icons">
                     <AttachFileIcon
                         className="attach-icon"
                         onMouseOver={handleMouseEnter}
-                        ref={attachIcon} />
-                    <SentimentSatisfiedAltIcon className='smile-icon' onMouseOver={handleShowEmoji} />
+                        ref={attachIcon}
+                    />
+                    <SentimentSatisfiedAltIcon
+                        className="smile-icon"
+                        onMouseOver={handleShowEmoji}
+                    />
                 </div>
                 <TextField
                     fullWidth
@@ -99,20 +128,23 @@ function MessageInput({ currentChat, setMessages, messages, messagesEndRef }: { 
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
+                        if (e.key === "Enter" && !e.shiftKey) {
                             e.preventDefault();
                             sendMessage();
                         }
                     }}
                 />
-                <SendIcon
-                    className="send-icon"
-                    onClick={sendMessage}
-                />
-                {isSendFileTypeVisible && <SendFileType file={file} setFile={setFile} setIsSendFileTypeVisible={setIsSendFileTypeVisible} />}
+                <SendIcon className="send-icon" onClick={sendMessage} />
+                {isSendFileTypeVisible && (
+                    <SendFileType
+                        file={file}
+                        setFile={setFile}
+                        setIsSendFileTypeVisible={setIsSendFileTypeVisible}
+                    />
+                )}
             </Box>
         </>
-    )
+    );
 }
 
-export default MessageInput
+export default MessageInput;

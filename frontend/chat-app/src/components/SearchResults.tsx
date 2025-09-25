@@ -72,7 +72,7 @@ function SearchResults({ query }: SearchResultsProps) {
                 />
             ))}
             {results.length === 0 && (
-                <h2 style={{ color: 'white', textAlign: 'center' }}>هیچ نتیجه ای یافت نشد</h2>
+                <h3 style={{ color: 'white', textAlign: 'center' }}>chat not found !!</h3>
             )}
         </ul>
     );
