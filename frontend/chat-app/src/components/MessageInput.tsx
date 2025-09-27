@@ -28,7 +28,6 @@ function MessageInput({
     const [isSendFileTypeVisible, setIsSendFileTypeVisible] = useState(false);
     const [isShowEmojiPicker, setIsShowEmojiPicker] = useState(false);
     const [file, setFile] = useState<File | null>(null);
-    console.log(messages)
     // Load messages fresh when chat changes
     useEffect(() => {
         if (!currentChat?._id) {
