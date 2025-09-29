@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { postData } from '../data';
 import { useChatContext } from '../hooks/useChatContext';
 import ChatItem from './ChatItem';
 import socket from '../lib/socket';
 import { SOCKET_EVENTS } from '../enums';
+import {postData} from '../data'
+
 
 interface SearchResultsProps {
     query: string;
@@ -25,18 +26,21 @@ function SearchResults({ query }: SearchResultsProps) {
         if (!query) return;
         setIsSearchingChats(true);
         setLoading(true);
-        const timeout = setTimeout(() => {
-            postData(`${import.meta.env.VITE_BACKEND_URL_DEVELOPMENT}/api/chat/search`, { keyword: query })
+        const timeout = setTimeout( async () => {
+           await postData(`${import.meta.env.VITE_BACKEND_URL_DEVELOPMENT}/api/chat/search`, { keyword: query })
                 .then(result => {
+                    setLoading(false)
+                    console.log(result)
                     setResults(result.data)
                 })
                 .catch(err => {
                     setError(err)
+                    setLoading(false)
                 })
                 .finally(() => {
                     setLoading(false)
                 });
-        }, 5000);
+        }, 2000);
         // If no results after 5 seconds, stop loading
         if (results.length === 0 && !loading) {
             if (results.length === 0) {
@@ -50,7 +54,7 @@ function SearchResults({ query }: SearchResultsProps) {
 
     if (!query) return null;
     if (error) return <p>Error: {error?.message}</p>;
-    if (loading) return <h2 style={{ color: 'white' }}>در حال بارگیری...</h2>;
+    if (loading) return <h2 style={{ color: 'white' , display : 'flex' , justifyContent: 'cneter' }}>loading...</h2>;
 
     // Function to get chat information
     const getChatInfo = (chatID: string) => {
@@ -72,7 +76,7 @@ function SearchResults({ query }: SearchResultsProps) {
                 />
             ))}
             {results.length === 0 && (
-                <h2 style={{ color: 'white', textAlign: 'center' }}>هیچ نتیجه ای یافت نشد</h2>
+                <h3 style={{ color: 'white', textAlign: 'center' }}>chat not found !!</h3>
             )}
         </ul>
     );

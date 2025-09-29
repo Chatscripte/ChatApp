@@ -10,7 +10,6 @@ import { useChatContext } from '../hooks/useChatContext';
 
 function ChatHeader({ currentChat, toggleDrawer }: ChatHeaderProps) {
     const { currentChatInfos } = useChatContext();
-
     return (
         <Box className="chat-header">
             <IconButton className="mobile-menu-button" onClick={toggleDrawer} sx={{ display: { md: 'none' } }}>

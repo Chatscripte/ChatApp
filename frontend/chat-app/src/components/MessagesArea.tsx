@@ -93,7 +93,7 @@ function MessagesArea({ messages, messagesEndRef, currentUser }: ChatTemplatePro
         if (msg.fileUrl) {
             return (
                 <Box className="message-file">
-                    <Link to={msg.fileUrl} target="_blank" rel="noopener noreferrer">
+                    <Link to={msg.fileUrl} target="_blank" rel="noopener noreferrer" style={{textDecoration : 'none'}}>
                         {acceptedFiles(msg) ? (
                             msg.fileUrl.endsWith('.mp4') ? (
                                 <video
@@ -133,7 +133,7 @@ function MessagesArea({ messages, messagesEndRef, currentUser }: ChatTemplatePro
             );
         }
         if (msg.location && !msg.fileUrl && !msg.text) {
-            return filteredLocationMessages.map((msg) => {
+            return filteredLocationMessages.filter(mg => mg._id === msg._id).map((msg) => {
                 return (
                     <Box className="message-file">
                         {loadingStates[msg._id] ? (

@@ -14,6 +14,8 @@ import { postData } from "../data";
 import { SOCKET_EVENTS } from "../enums";
 import socket from "../lib/socket";
 import { useChatContext } from "../hooks/useChatContext";
+import {toast} from "react-toastify";
+import {getChatInformation} from "../lib/helper";
 
 interface SearchModalProps {
     open: boolean;
@@ -49,7 +51,7 @@ function SearchModal({ open, handleClose }: SearchModalProps) {
     const searchedValue = useDeferredValue(query);
     const { setIsCreatedPv } = useChatContext();
 
-    const { setIsChatOpend } = useChatContext();
+    const { setIsChatOpend , allChats , setCurrentChatInfos , setCurrentChat } = useChatContext();
 
     useEffect(() => {
         if (!searchedValue) return;
@@ -74,16 +76,28 @@ function SearchModal({ open, handleClose }: SearchModalProps) {
         return () => clearTimeout(timeoutId);
     }, [searchedValue]);
 
-    const handleUserSelect = (user: user) => {
-        console.log('Selected User:', user._id);
+
+    const handleUserSelect = async (user: User) => {
+        console.log("Selected User:", user._id);
         socket.emit(
             SOCKET_EVENTS.CHAT_CREATE,
-            { type: 'pv', recipientUsername: user.username },
-            (response: { success: boolean; message?: string; data?: unknown }) => {
+            { type: "pv", recipientUsername: user.username },
+            async (response: { success: boolean; message?: string; data?: any }) => {
                 setIsLoading(false);
                 console.log(response);
+
+                if (response.success === false && response.message === "This chat already exists!") {
+                    const mainChat = allChats?.find(chat => chat._id === response?.data?._id);
+                    if (mainChat) {
+                        setIsChatOpend(true);
+                        const chatInfo = await getChatInformation(mainChat._id);
+                        setCurrentChat(chatInfo.chatInfo)
+                        setCurrentChatInfos(chatInfo)
+                        handleClose();
+                    }
+                }
+
                 if (response.success) {
-                    // Handle successful user selection (e.g., open chat)
                     setIsCreatedPv(true);
                     setIsChatOpend(true);
                     handleClose();
@@ -93,7 +107,8 @@ function SearchModal({ open, handleClose }: SearchModalProps) {
                 }
             }
         );
-    }
+    };
+
 
     return (
         <Modal open={open} onClose={handleClose}>

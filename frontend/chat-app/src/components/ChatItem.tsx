@@ -8,22 +8,15 @@ import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import ImageIcon from '@mui/icons-material/Image';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
+
 interface ChatItemProps {
     conv?: { _id: string; title: string; profile?: string; type?: string };
     getChatInfo?: (value: string) => void;
+    username?: ''
 }
 
-function ChatItem({ conv, getChatInfo }: ChatItemProps) {
-    const { chatInfo, setIsChatOpend, setCurrentChat, setCurrentChatInfos  ,  currentChat } = useChatContext();
-    const [username, setUsername] = useState('');
-
-    useEffect(() => {
-        if (chatInfo && conv) {
-            setUsername(chatInfo[conv?._id]?.members[1]?.user?.username ?? '');
-        }
-    }, [chatInfo, conv]);
-
-    console.log(conv)
+function ChatItem({ conv, getChatInfo , username  }: ChatItemProps) {
+    const { chatInfo, setIsChatOpend, setCurrentChat, setCurrentChatInfos  ,  currentChat , currentChatInfos , lastMessage , setLastMessage } = useChatContext();
 
     const showLastMessageBaseOnType = (lastMessage) => {
         if (lastMessage?.location) {
@@ -51,7 +44,9 @@ function ChatItem({ conv, getChatInfo }: ChatItemProps) {
         }
     }
 
-    console.log(conv)
+    useEffect(() => {
+        showLastMessageBaseOnType(conv?.lastMessage)
+     },[setCurrentChatInfos,currentChat])
 
     if (!conv) return null;
 

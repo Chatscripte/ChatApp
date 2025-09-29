@@ -54,6 +54,8 @@ export interface ChatContextType {
     setIsCreatedPv: React.Dispatch<React.SetStateAction<boolean>>;
     currentChatInfos: chatInfo | null;
     setCurrentChatInfos: React.Dispatch<React.SetStateAction<chatInfo | null>>;
+    lastMessage: {}
+    setLastMessage : React.Dispatch<React.SetStateAction<{} | null>>
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -68,9 +70,10 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [allChats, setAllChats] = useState<Array<{ _id: string; title: string; profile: string; type?: string }>>([]);
     const [currentChat, setCurrentChat] = useState<{ _id: string; title: string; profile: string } | null>(null);
     const [currentChatInfos, setCurrentChatInfos] = useState<chatInfo | null>(null);
+    const [lastMessage , setLastMessage] = useState({})
 
     return (
-        <ChatContext.Provider value={{ isCreatedPv, setIsCreatedPv, allChats, setAllChats, isChatOpend, setIsChatOpend, currentChat, setCurrentChat, chatInfo, setChatInfo, isCreatedGroup, setIsCreatedGroup, isSearchingChats, setIsSearchingChats, currentChatInfos, setCurrentChatInfos }}>
+        <ChatContext.Provider value={{ isCreatedPv, lastMessage , setLastMessage ,setIsCreatedPv, allChats, setAllChats, isChatOpend, setIsChatOpend, currentChat, setCurrentChat, chatInfo, setChatInfo, isCreatedGroup, setIsCreatedGroup, isSearchingChats, setIsSearchingChats, currentChatInfos, setCurrentChatInfos }}>
             {children}
         </ChatContext.Provider>
     );

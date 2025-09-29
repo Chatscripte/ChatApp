@@ -16,6 +16,7 @@ export async function postData(url: string, data: any) {
         },
         body: JSON.stringify(data),
     });
+    console.log(response)
     if (!response.ok) {
         throw new Error('Network response was not ok', { cause: response });
     }
