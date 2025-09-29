@@ -60,3 +60,20 @@ exports.seenByNewUser = async (chatID, userID, messageID) => {
 
 	return message;
 };
+
+exports.unreadCount = async (chatID, userID) => {
+	const membership = await MembershipModel.findOne({
+		chat: chatID,
+		user: userID,
+	}).populate("lastSeenMessage");
+
+	const seenAt = membership?.lastSeenMessage?.createdAt || new Date(0);
+
+	const count = await MessageModel.countDocuments({
+		chat: chatID,
+		createdAt: { $gt: seenAt },
+		sender: { $ne: userID },
+	});
+
+	return count;
+}

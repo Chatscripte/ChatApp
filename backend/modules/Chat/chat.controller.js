@@ -1,6 +1,7 @@
 const validatorErrorHandler = require("../../sockets/helpers/socketValidatorErrorHandler");
 const chatService = require("./chat.service");
 const authService = require("./../Auth/auth.service");
+const messageService = require("./../Message/message.service");
 const { pvChatValidator, groupChatValidator } = require("./chat.validator");
 const { successResponse, errorResponse } = require("../../helpers/responses");
 
@@ -21,24 +22,31 @@ exports.getAll = async (socket) => {
 
 	const chats = await chatService.getAllChats(userID);
 
+	//* Unread Messages Count for each chat
+	chats.map(async (chat) => {
+		chat.unreadCount = await messageService.unreadCount(userID, chat._id);
+	});
+
 	return chats;
 };
 
-exports.getOne = async (data) => {
+exports.getOne = async (socket, data) => {
+	const userID = socket.user._id;
 	const { chatID } = data;
 
 	const chat = await chatService.getChatDetails(chatID);
-
 	if (!chat) {
 		return {
 			success: false,
 			message: "Chat not found",
 		};
 	}
+	//* Get User Unread Messages Count
+	const unreadCount = await messageService.unreadCount(userID, chatID);
 
 	return {
 		success: true,
-		chat,
+		chat: { ...chat, unreadCount },
 	};
 };
 const createPv = async (ownerID, recipientUsername) => {
