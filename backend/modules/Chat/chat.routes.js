@@ -6,8 +6,6 @@ const router = express.Router();
 
 router.route("/").post(tokenAuth, controller.createNewChat);
 
-router.route("/search").post(controller.findChats);
-
 router.route("/join/:code").post(tokenAuth, controller.joinToChat);
 
 module.exports = router;

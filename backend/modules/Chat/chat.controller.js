@@ -5,18 +5,6 @@ const messageService = require("./../Message/message.service");
 const { pvChatValidator, groupChatValidator } = require("./chat.validator");
 const { successResponse, errorResponse } = require("../../helpers/responses");
 
-exports.findChats = async (req, res, next) => {
-	try {
-		const { keyword } = req.body;
-
-		const results = await chatService.searchChats(keyword);
-
-		return successResponse(res, 200, results);
-	} catch (err) {
-		next(err);
-	}
-};
-
 exports.getAll = async (socket) => {
 	const userID = socket.user._id;
 

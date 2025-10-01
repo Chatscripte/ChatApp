@@ -1,13 +1,18 @@
-const { successResponse } = require("../../helpers/responses");
+const { successResponse, errorResponse } = require("../../helpers/responses");
 const chatService = require("./../Chat/chat.service");
 const userService = require("./../User/user.service");
 
 exports.search = async (req, res, next) => {
 	try {
 		const { keyword } = req.body;
+		const trimmedKeyword = keyword.trim();
 
-		const chatsResults = await chatService.searchChats(keyword);
-		const usersResults = await userService.searchUsers(keyword);
+		if (!trimmedKeyword) {
+			return errorResponse(res, 400, "Keyword is Require");
+		}
+
+		const chatsResults = await chatService.searchChats(trimmedKeyword);
+		const usersResults = await userService.searchUsers(trimmedKeyword);
 
 		return successResponse(res, 200, {
 			chats: chatsResults,
