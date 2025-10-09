@@ -1,5 +1,10 @@
 const { roomOnlineUsersCount } = require("../../sockets/funcs/onlineUsers");
-const { createNewChat, getAll, getOne } = require("./chat.controller");
+const {
+	createNewChat,
+	getAll,
+	getOne,
+	joinToChatByID,
+} = require("./chat.controller");
 
 exports.registerChatHandler = (io, socket) => {
 	socket.on("chat:create", async (data, cb) => {
@@ -53,6 +58,33 @@ exports.registerChatHandler = (io, socket) => {
 			}
 
 			return cb(result);
+		} catch (err) {
+			return cb({ success: false, message: err.message });
+		}
+	});
+
+	socket.on("chat:join", async (data, cb) => {
+		try {
+			const result = await joinToChatByID(socket, data);
+
+			const chat = result.data ? result.data : undefined;
+
+			if (result.success === false) {
+				return cb({
+					success: false,
+					message: result.message,
+					data: chat,
+				});
+			}
+
+			socket.join(chat._id.toString());
+			roomOnlineUsersCount(io, chat._id.toString());
+
+			return cb({
+				success: true,
+				message: result.message,
+				data: chat,
+			});
 		} catch (err) {
 			return cb({ success: false, message: err.message });
 		}
