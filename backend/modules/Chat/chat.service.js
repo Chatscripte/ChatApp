@@ -221,6 +221,20 @@ exports.searchChats = async (keyword) => {
 			},
 		},
 		{
+			$lookup: {
+				from: "messages",
+				localField: "lastMessage",
+				foreignField: "_id",
+				as: "lastMessage",
+			},
+		},
+		{
+			$unwind: {
+				path: "$lastMessage",
+				preserveNullAndEmptyArrays: true,
+			},
+		},
+		{
 			$sort: { exactMatch: -1, title: 1 },
 		},
 		{
@@ -229,6 +243,8 @@ exports.searchChats = async (keyword) => {
 				title: 1,
 				profile: 1,
 				exactMatch: 1,
+				lastMessage: 1,
+				updatedAt: 1,
 			},
 		},
 	]);

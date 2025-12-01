@@ -57,7 +57,7 @@ const createPv = async (ownerID, recipientUsername) => {
 	if (ownerID.toString() === recipient._id.toString()) {
 		return {
 			success: false,
-			message: "chat creator and recipient is the same!",
+			message: "chat creator and recipient are the same!",
 		};
 	}
 
