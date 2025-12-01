@@ -240,6 +240,7 @@ exports.searchChats = async (keyword) => {
 		{
 			$project: {
 				_id: 1,
+				type: 1,
 				title: 1,
 				profile: 1,
 				exactMatch: 1,
