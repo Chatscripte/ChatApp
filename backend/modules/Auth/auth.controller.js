@@ -50,7 +50,7 @@ exports.authOrRegister = async (req, res, next) => {
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
 			sameSite: "none",
-			secure: false,
+			secure: true,
 			signed: true,
 		});
 		return successResponse(res, 201, { accessToken, isNew: false });
