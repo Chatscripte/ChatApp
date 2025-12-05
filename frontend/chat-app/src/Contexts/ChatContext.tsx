@@ -73,7 +73,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [lastMessage , setLastMessage] = useState({})
 
     return (
-        <ChatContext.Provider value={{ isCreatedPv, lastMessage , setLastMessage ,setIsCreatedPv, allChats, setAllChats, isChatOpend, setIsChatOpend, currentChat, setCurrentChat, chatInfo, setChatInfo, isCreatedGroup, setIsCreatedGroup, isSearchingChats, setIsSearchingChats, currentChatInfos, setCurrentChatInfos }}>
+        <ChatContext.Provider value={{ isCreatedPv, lastMessage , setLastMessage ,setIsCreatedPv, allChats, setAllChats, isChatOpend, setIsChatOpend, currentChat, setCurrentChat, chatInfo, setChatInfo, isCreatedGroup, setIsCreatedGroup, isSearchingChats, setIsSearchingChats, currentChatInfos, setCurrentChatInfos  }}>
             {children}
         </ChatContext.Provider>
     );

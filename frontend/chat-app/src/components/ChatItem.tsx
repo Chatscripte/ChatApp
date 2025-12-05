@@ -2,7 +2,7 @@ import { ListItem, ListItemButton, ListItemText, Typography } from '@mui/materia
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { useChatContext } from '../hooks/useChatContext';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import ImageIcon from '@mui/icons-material/Image';
@@ -17,7 +17,7 @@ interface ChatItemProps {
 
 function ChatItem({ conv, getChatInfo , username  }: ChatItemProps) {
     const { chatInfo, setIsChatOpend, setCurrentChat, setCurrentChatInfos  ,  currentChat , currentChatInfos , lastMessage , setLastMessage } = useChatContext();
-
+    
     const showLastMessageBaseOnType = (lastMessage) => {
         if (lastMessage?.location) {
             return <LocationOnIcon />
@@ -85,7 +85,6 @@ function ChatItem({ conv, getChatInfo , username  }: ChatItemProps) {
                                 >
                                     {showLastMessageBaseOnType(conv?.lastMessage)}
                                 </Typography>
-
                             </>
                         }
                     />

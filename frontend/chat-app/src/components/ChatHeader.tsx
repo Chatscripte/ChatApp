@@ -6,8 +6,6 @@ import VerticalSplitIcon from '@mui/icons-material/VerticalSplit';
 import type { ChatHeaderProps } from '../types';
 import { useChatContext } from '../hooks/useChatContext';
 
-
-
 function ChatHeader({ currentChat, toggleDrawer }: ChatHeaderProps) {
     const { currentChatInfos } = useChatContext();
     return (

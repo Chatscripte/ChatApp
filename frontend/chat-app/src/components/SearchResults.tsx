@@ -3,8 +3,10 @@ import { useChatContext } from '../hooks/useChatContext';
 import ChatItem from './ChatItem';
 import socket from '../lib/socket';
 import { SOCKET_EVENTS } from '../enums';
-import {postData} from '../data'
-
+import { postData } from '../data'
+import { useDebounce } from 'use-debounce';
+import UserSearchSkeleton from './UserSearchSkeleton';
+import { Typography } from '@mui/material';
 
 interface SearchResultsProps {
     query: string;
@@ -16,47 +18,43 @@ interface result {
     exactMatch: boolean;
 }
 
-function SearchResults({ query }: SearchResultsProps) {
+function SearchResults({ query}: SearchResultsProps) {
     const [results, setResults] = useState<result[]>([]);
     const [loading, setLoading] = useState(false);
     const { setIsSearchingChats, setChatInfo } = useChatContext();
     const [error, setError] = useState<Error | null>(null);
-
+    const [debouncedQuery] = useDebounce(query, 2000);
     useEffect(() => {
-        if (!query) return;
-        setIsSearchingChats(true);
-        setLoading(true);
-        const timeout = setTimeout( async () => {
-           await postData(`${import.meta.env.VITE_BACKEND_URL_DEVELOPMENT}/api/chat/search`, { keyword: query })
-                .then(result => {
-                    setLoading(false)
-                    console.log(result)
-                    setResults(result.data)
-                })
-                .catch(err => {
-                    setError(err)
-                    setLoading(false)
-                })
-                .finally(() => {
-                    setLoading(false)
-                });
-        }, 2000);
-        // If no results after 5 seconds, stop loading
-        if (results.length === 0 && !loading) {
-            if (results.length === 0) {
-                setLoading(false)
-            }
+        if (query) {
+            setLoading(true);
         }
-        return () => {
-            clearTimeout(timeout);
+        if (!query) {
+            setResults([]);
+            setLoading(false);
         }
     }, [query]);
+    useEffect(() => {
+        if (!debouncedQuery) return;
+        const searchData = async () => {
+            setIsSearchingChats(true);
+            try {
+                const result = await postData(
+                    `${import.meta.env.VITE_BACKEND_URL_DEVELOPMENT}/api/search`,
+                    { keyword: debouncedQuery }
+                );
+                setResults(result.data.chats);
+            } catch (err: any) {
+                setError(err);
+            } finally {
+                setLoading(false); // only this turns loading OFF
+            }
+        };
+        searchData();
+    }, [debouncedQuery]);
 
-    if (!query) return null;
+    if (!debouncedQuery) return null;
     if (error) return <p>Error: {error?.message}</p>;
-    if (loading) return <h2 style={{ color: 'white' , display : 'flex' , justifyContent: 'cneter' }}>loading...</h2>;
 
-    // Function to get chat information
     const getChatInfo = (chatID: string) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         socket.emit(SOCKET_EVENTS.CHAT_GET_ONE, { chatID }, (data: any) => {
@@ -67,18 +65,23 @@ function SearchResults({ query }: SearchResultsProps) {
     }
 
     return (
-        <ul className='conversation-list' style={{ padding: '0px' }}>
-            {results?.map((result, index) => (
-                <ChatItem
-                    key={index}
-                    conv={result}
-                    getChatInfo={getChatInfo}
-                />
-            ))}
-            {results.length === 0 && (
-                <h3 style={{ color: 'white', textAlign: 'center' }}>chat not found !!</h3>
+        <>
+            {loading && <UserSearchSkeleton />}
+            {!loading && results?.length > 0 && (
+            <ul className='conversation-list' style={{ padding: '0px' }}>
+                {results?.map((result, index) => (
+                    <ChatItem
+                        key={index}
+                        conv={result}
+                        getChatInfo={getChatInfo}
+                    />
+                ))}
+            </ul>
             )}
-        </ul>
+            {!loading && results?.length === 0 && (
+                <Typography variant='h6' color='#fff' textAlign='center'>No results found</Typography>
+            )}
+        </>
     );
 }
 

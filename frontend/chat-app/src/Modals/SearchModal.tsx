@@ -14,8 +14,9 @@ import { postData } from "../data";
 import { SOCKET_EVENTS } from "../enums";
 import socket from "../lib/socket";
 import { useChatContext } from "../hooks/useChatContext";
-import {toast} from "react-toastify";
-import {getChatInformation} from "../lib/helper";
+import { getChatInformation } from "../lib/helper";
+import { useDebounce } from 'use-debounce';
+import UserSearchSkeleton from "../components/UserSearchSkeleton";
 
 interface SearchModalProps {
     open: boolean;
@@ -45,47 +46,44 @@ const style = {
 };
 
 function SearchModal({ open, handleClose }: SearchModalProps) {
-    const [query, setQuery] = useState("");
+    const [query, setQuery] = useState('');
+    const [debouncedQuery] = useDebounce(query, 1000);
     const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const searchedValue = useDeferredValue(query);
+    // const searchedValue = useDeferredValue(query);
     const { setIsCreatedPv } = useChatContext();
+    const { setIsChatOpend, allChats, setCurrentChatInfos, setCurrentChat } = useChatContext();
+   
+  useEffect(() => {
+    if (!debouncedQuery) return;
 
-    const { setIsChatOpend , allChats , setCurrentChatInfos , setCurrentChat } = useChatContext();
+    postData(`${import.meta.env.VITE_BACKEND_URL_DEVELOPMENT}/api/search`, {
+        keyword: debouncedQuery
+    })
+        .then((data) => {
+            if (data.success) {
+                setResults(data.data.users);
+                setIsLoading(false);
+            }
+        })
+}, [debouncedQuery]);
 
-    useEffect(() => {
-        if (!searchedValue) return;
+useEffect(() => {
+    if (query) {
         setIsLoading(true);
-        const timeoutId = setTimeout(() => {
-            postData(`${import.meta.env.VITE_BACKEND_URL_DEVELOPMENT}/api/search`, { keyword: searchedValue })
-                .then((data) => {
-                    console.log(data);
-                    if (data.success) {
-                        setIsLoading(false);
-                        setResults(data.data.users)
-                    }
-                })
-                .catch((error) => {
-                    setIsLoading(false);
-                    console.error(error);
-                });
-        }, 5000);
-        if (results.length === 0 && !isLoading) {
-            setResults([]);
-        }
-        return () => clearTimeout(timeoutId);
-    }, [searchedValue]);
-
+    } else {
+        setIsLoading(false);
+        setResults([]);
+    }
+}, [query]);
 
     const handleUserSelect = async (user: User) => {
-        console.log("Selected User:", user._id);
         socket.emit(
             SOCKET_EVENTS.CHAT_CREATE,
             { type: "pv", recipientUsername: user.username },
             async (response: { success: boolean; message?: string; data?: any }) => {
                 setIsLoading(false);
-                console.log(response);
-
+                setIsChatOpend(true);
                 if (response.success === false && response.message === "This chat already exists!") {
                     const mainChat = allChats?.find(chat => chat._id === response?.data?._id);
                     if (mainChat) {
@@ -96,7 +94,6 @@ function SearchModal({ open, handleClose }: SearchModalProps) {
                         handleClose();
                     }
                 }
-
                 if (response.success) {
                     setIsCreatedPv(true);
                     setIsChatOpend(true);
@@ -107,8 +104,15 @@ function SearchModal({ open, handleClose }: SearchModalProps) {
                 }
             }
         );
+        socket?.on(SOCKET_EVENTS.CHAT_CREATED, (data) => {
+            setCurrentChatInfos((prev) => ({
+                ...prev,
+                members: data?.chat?.members,
+                chatInfo: data?.chat?.chatInfo ?? { _id: '', createdAt: '', inviteLink: '', owner: { _id: '', password: '', username: '' }, title: '', type: '' },
+                messages: data?.chat?.messages ?? [],
+            }))
+        })
     };
-
 
     return (
         <Modal open={open} onClose={handleClose}>
@@ -143,7 +147,6 @@ function SearchModal({ open, handleClose }: SearchModalProps) {
                         esc
                     </Typography>
                 </Box>
-
                 {/* Results */}
                 <Box sx={{ flex: 1, overflowY: "auto" }}>
                     <Typography
@@ -153,7 +156,9 @@ function SearchModal({ open, handleClose }: SearchModalProps) {
                         RECENT
                     </Typography>
                     <List disablePadding>
-                        {results?.map((item, i) => (
+                        {
+                            isLoading ? (<UserSearchSkeleton />) : (
+                               results?.map((item, i) => (
                             <ListItem
                                 key={i}
                                 button
@@ -172,7 +177,8 @@ function SearchModal({ open, handleClose }: SearchModalProps) {
                                     }
                                 />
                             </ListItem>
-                        ))}
+                        )))
+                       }
                     </List>
                 </Box>
             </Box>

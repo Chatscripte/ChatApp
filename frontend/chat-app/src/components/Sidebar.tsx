@@ -1,5 +1,5 @@
 import { Box, Grid, List, Paper, Typography } from '@mui/material';
-import { useCallback, useDeferredValue, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import SearchResults from './SearchResults';
 import AddGroup from './AddGroup';
@@ -27,11 +27,11 @@ function Sidebar() {
     } = useChatContext();
 
     const [query, setQuery] = useState('');
-    const searchedValue = useDeferredValue(query);
+    // const searchedValue = useDeferredValue(query);
     const [isShowSearchingUser, setIsShowSearchingUser] = useState(false);
     const [recieverUsername , setRecieverUsername] = useState<{[id: 'string'] : string}>({});
 
-    /** ✅ define getChatInfo once, memoized */
+   
     const getChatInfo = useCallback(
         (chatID: string) => {
             socket.emit(SOCKET_EVENTS.CHAT_GET_ONE, { chatID }, (data: any) => {
@@ -103,7 +103,7 @@ function Sidebar() {
                         </Box>
 
                         {/* Search Results */}
-                        <SearchResults query={searchedValue} />
+                        {query && <SearchResults query={query}  />} 
 
                         {/* Chats list */}
                         {!isSearchingChats && (
